@@ -1,13 +1,11 @@
-import { Header, Title, Text } from "@mantine/core";
+import { Header, Title } from "@mantine/core";
+import TextPPV from "./TextPPV";
 
 export default function PPVHeader() {
   return (
     <Header height={60} p={"md"}>
       <Title order={3} transform={"uppercase"} italic>
-        Pilotando Para{" "}
-        <Text color="ppv" inherit component="span">
-          Vida
-        </Text>
+        Pilotando Para <TextPPV text="Vida" />
       </Title>
     </Header>
   );
