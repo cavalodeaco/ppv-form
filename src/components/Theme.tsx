@@ -5,21 +5,37 @@ export default function Theme({ children }: { children: JSX.Element }) {
   return (
     <MantineProvider
       theme={{
-        colorScheme: "dark",
+        colorScheme: "dark", // do NOT use light!
+        defaultRadius: 0,
+        radius: 0,
         colors: {
-          ppv: [
-            "#F5EEE9",
-            "#ECD5C8",
-            "#E8BCA3",
-            "#EDA47B",
-            "#FA8C4D",
-            "#E57D42",
-            "#CF703A",
-            "#B1683E",
-            "#956042",
-            "#7E5843",
+          dark: [
+            "#FFFFFF",
+            "#CFCFCF",
+            "#A7A7A7",
+            "#888888",
+            "#6C6C6C",
+            "#595959",
+            "#4A4A4A",
+            "#3C3C3C",
+            "#313131",
+            "#282828",
           ],
+          ppv: [
+            "#F8F2EE",
+            "#EED8CC",
+            "#ECBFA6",
+            "#F1A67D",
+            "#FF8D4D",
+            "#EA7E41",
+            "#D47139",
+            "#B7683B",
+            "#9A6040",
+            "#825942",
+          ]
         },
+        primaryColor: "ppv",
+        primaryShade: 4,
         headings: {
           fontFamily: "TimeBurner, fantasy, Ubuntu, sans-serif",
           fontWeight: "bold",
