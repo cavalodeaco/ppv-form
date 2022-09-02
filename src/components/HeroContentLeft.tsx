@@ -1,18 +1,11 @@
-import {
-  createStyles,
-  Overlay,
-  Container,
-  Title,
-  Button,
-  Text,
-} from "@mantine/core";
-import TextPPV from "./TextPPV";
+import { createStyles, Overlay, Container, Image, Box } from "@mantine/core";
+import hero from "./img/hero.jpeg";
+import logo from "./img/logoppv.svg";
 
 const useStyles = createStyles((theme) => ({
   hero: {
     position: "relative",
-    backgroundImage:
-      "url(https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)",
+    backgroundImage: `url(${hero})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
   },
@@ -22,7 +15,7 @@ const useStyles = createStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
     paddingBottom: theme.spacing.xl * 6,
     zIndex: 1,
     position: "relative",
@@ -33,38 +26,11 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  title: {
-    color: theme.white,
-    fontSize: 60,
-    fontWeight: 900,
-    lineHeight: 1.1,
-
-    [theme.fn.smallerThan("sm")]: {
-      fontSize: 40,
-      lineHeight: 1.2,
-    },
-
-    [theme.fn.smallerThan("xs")]: {
-      fontSize: 28,
-      lineHeight: 1.3,
-    },
-  },
-
-  description: {
-    color: theme.white,
-    maxWidth: 600,
-
+  image: {
+    width: "400px",
+    maxWidth: "50%",
     [theme.fn.smallerThan("sm")]: {
       maxWidth: "100%",
-      fontSize: theme.fontSizes.sm,
-    },
-  },
-
-  control: {
-    marginTop: theme.spacing.xl * 1.5,
-
-    [theme.fn.smallerThan("sm")]: {
-      width: "100%",
     },
   },
 }));
@@ -79,20 +45,11 @@ export function HeroContentLeft() {
         opacity={1}
         zIndex={0}
       />
-      <Container className={classes.container}>
-        <Title className={classes.title} italic transform="uppercase">
-          Pilotando Para <TextPPV text="Vida" />
-        </Title>
-        <Text className={classes.description} size="xl" mt="xl">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos eveniet
-          magni dolores quam nisi fuga voluptatem magnam facere corrupti
-          expedita quae hic enim cumque rerum, explicabo adipisci amet incidunt
-          consequuntur.
-        </Text>
 
-        <Button size="xl" radius="xl" className={classes.control}>
-          Inscreva-se
-        </Button>
+      <Container className={classes.container}>
+        <Box className={classes.image}>
+          <Image src={logo} alt="Pilotando Para Vida" withPlaceholder />
+        </Box>
       </Container>
     </div>
   );
