@@ -8,12 +8,7 @@ import {
   createStyles,
   Highlight,
 } from "@mantine/core";
-import {
-  IconSchool,
-  IconCoinOff,
-  IconHelmet,
-  TablerIcon,
-} from "@tabler/icons";
+import { IconSchool, IconCoinOff, IconHelmet, TablerIcon } from "@tabler/icons";
 // https://tabler-icons.io/
 import TextPPV from "./TextPPV";
 
@@ -62,7 +57,18 @@ const useStyles = createStyles((theme) => ({
   wrapper: {
     paddingTop: theme.spacing.xl * 4,
     paddingBottom: theme.spacing.xl * 4,
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      paddingTop: theme.spacing.xl * 2,
+      paddingBottom: theme.spacing.xl * 2,
+    },
   },
+
+  title: {
+    fontSize: 34,
+    [theme.fn.smallerThan('sm')]:  {
+      fontSize: 26,
+    }
+  }
 }));
 
 export function About() {
@@ -74,11 +80,11 @@ export function About() {
   return (
     <div id="sobre">
       <Container className={classes.wrapper}>
-        <Title order={1} align="center" transform="uppercase" italic p={"xl"}>
+        <Title order={1} align="center" transform="uppercase" italic p={"xl"} className={classes.title}>
           Curso de pilotagem defensiva <TextPPV text={"Pilotando Para Vida"} />
         </Title>
 
-        <Text align="center" size={"lg"}>
+        <Text align="center" size={"md"}>
           <Highlight
             highlight={[
               "Pilotando Para Vida",

@@ -1,18 +1,140 @@
-import { createStyles } from "@mantine/core";
+import {
+  createStyles,
+  Text,
+  Title,
+  SimpleGrid,
+  TextInput,
+  Textarea,
+  Button,
+  Group,
+  ThemeIcon,
+  Space,
+  Center,
+} from "@mantine/core";
+import { IconTrafficCone } from "@tabler/icons";
 
 const useStyles = createStyles((theme) => ({
-  inscricao: {
+  wrapper: {
     minHeight: 400,
-    paddingTop: 200,
-    textAlign: 'center',
+    boxSizing: "border-box",
+    backgroundImage: `linear-gradient(-60deg, ${
+      theme.colors[theme.primaryColor][4]
+    } 0%, ${theme.colors[theme.primaryColor][7]} 100%)`,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.xl * 2.5,
+
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      padding: theme.spacing.xl * 1.5,
+    },
+  },
+
+  title: {
+    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+    color: theme.white,
+    lineHeight: 1,
+  },
+
+  description: {
+    color: theme.colors[theme.primaryColor][0],
+    maxWidth: "100%",
+
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      maxWidth: "100%",
+    },
+  },
+
+  form: {
+    backgroundColor: theme.white,
+    padding: theme.spacing.xl,
+    borderRadius: theme.radius.md,
+    boxShadow: theme.shadows.lg,
+  },
+
+  social: {
+    color: theme.white,
+
+    "&:hover": {
+      color: theme.colors[theme.primaryColor][1],
+    },
+  },
+
+  input: {
+    backgroundColor: theme.white,
+    borderColor: theme.colors.gray[4],
+    color: theme.black,
+
+    "&::placeholder": {
+      color: theme.colors.gray[5],
+    },
+  },
+
+  inputLabel: {
+    color: theme.black,
+  },
+
+  control: {
+    backgroundColor: theme.colors[theme.primaryColor][6],
   },
 }));
 
-export default function Enrollment() {
+function Warning({ text }: { text: string }) {
   const { classes } = useStyles();
   return (
-    <div id="inscricao" className={classes.inscricao}>
-      <p>Olá, ainda não é possível se inscrever por aqui! 😕</p>
+    <Text className={classes.description} mt="sm" mb={30}>
+      <Center inline>
+        <ThemeIcon variant="filled" size={30} radius={30}>
+          <IconTrafficCone size={20} stroke={1.5} />
+        </ThemeIcon>
+        <Space w="xs" />
+        {text}
+      </Center>
+    </Text>
+  );
+}
+
+export default function Enrollment() {
+  const { classes } = useStyles();
+
+  return (
+    <div className={classes.wrapper} id="inscricao">
+      <SimpleGrid
+        cols={2}
+        spacing={50}
+        breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+      >
+        <div>
+          <Title className={classes.title} mb={30}>Inscreva-se</Title>
+          <Warning text="O curso geralmente ocorre aos sábados das 8h às 14h." />
+          <Warning text="Tenha paciência, estamos com fila de espera." />
+          <Warning text="Entraremos em contato quando tivermos uma turma com vagas." />
+        </div>
+        <div className={classes.form}>
+          <TextInput
+            label="Email"
+            placeholder="your@email.com"
+            required
+            classNames={{ input: classes.input, label: classes.inputLabel }}
+          />
+          <TextInput
+            label="Name"
+            placeholder="John Doe"
+            mt="md"
+            classNames={{ input: classes.input, label: classes.inputLabel }}
+          />
+          <Textarea
+            required
+            label="Your message"
+            placeholder="I want to order your goods"
+            minRows={4}
+            mt="md"
+            classNames={{ input: classes.input, label: classes.inputLabel }}
+          />
+
+          <Group position="right" mt="md">
+            <Button className={classes.control}>Send message</Button>
+          </Group>
+        </div>
+      </SimpleGrid>
     </div>
   );
 }
