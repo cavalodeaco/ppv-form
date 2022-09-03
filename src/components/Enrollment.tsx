@@ -3,15 +3,13 @@ import {
   Text,
   Title,
   SimpleGrid,
-  TextInput,
-  Textarea,
-  Button,
-  Group,
   ThemeIcon,
   Space,
   Center,
 } from "@mantine/core";
+import "dayjs/locale/pt-br";
 import { IconTrafficCone } from "@tabler/icons";
+import EnrollmentForm from "./EnrollmentForm";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -22,6 +20,7 @@ const useStyles = createStyles((theme) => ({
     } 0%, ${theme.colors[theme.primaryColor][7]} 100%)`,
     borderRadius: theme.radius.md,
     padding: theme.spacing.xl * 2.5,
+    paddingTop: theme.spacing.xl * 4,
 
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       padding: theme.spacing.xl * 1.5,
@@ -32,6 +31,7 @@ const useStyles = createStyles((theme) => ({
     fontFamily: `Greycliff CF, ${theme.fontFamily}`,
     color: theme.white,
     lineHeight: 1,
+    paddingTop: theme.spacing.xl * 2,
   },
 
   description: {
@@ -41,39 +41,6 @@ const useStyles = createStyles((theme) => ({
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       maxWidth: "100%",
     },
-  },
-
-  form: {
-    backgroundColor: theme.white,
-    padding: theme.spacing.xl,
-    borderRadius: theme.radius.md,
-    boxShadow: theme.shadows.lg,
-  },
-
-  social: {
-    color: theme.white,
-
-    "&:hover": {
-      color: theme.colors[theme.primaryColor][1],
-    },
-  },
-
-  input: {
-    backgroundColor: theme.white,
-    borderColor: theme.colors.gray[4],
-    color: theme.black,
-
-    "&::placeholder": {
-      color: theme.colors.gray[5],
-    },
-  },
-
-  inputLabel: {
-    color: theme.black,
-  },
-
-  control: {
-    backgroundColor: theme.colors[theme.primaryColor][6],
   },
 }));
 
@@ -103,37 +70,14 @@ export default function Enrollment() {
         breakpoints={[{ maxWidth: "sm", cols: 1 }]}
       >
         <div>
-          <Title className={classes.title} mb={30}>Inscreva-se</Title>
+          <Title className={classes.title} mb={30}>
+            Inscreva-se
+          </Title>
           <Warning text="O curso geralmente ocorre aos sábados das 8h às 14h." />
           <Warning text="Tenha paciência, estamos com fila de espera." />
           <Warning text="Entraremos em contato quando tivermos uma turma com vagas." />
         </div>
-        <div className={classes.form}>
-          <TextInput
-            label="Email"
-            placeholder="your@email.com"
-            required
-            classNames={{ input: classes.input, label: classes.inputLabel }}
-          />
-          <TextInput
-            label="Name"
-            placeholder="John Doe"
-            mt="md"
-            classNames={{ input: classes.input, label: classes.inputLabel }}
-          />
-          <Textarea
-            required
-            label="Your message"
-            placeholder="I want to order your goods"
-            minRows={4}
-            mt="md"
-            classNames={{ input: classes.input, label: classes.inputLabel }}
-          />
-
-          <Group position="right" mt="md">
-            <Button className={classes.control}>Send message</Button>
-          </Group>
-        </div>
+        <EnrollmentForm />
       </SimpleGrid>
     </div>
   );
