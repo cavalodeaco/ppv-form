@@ -17,7 +17,7 @@ const useStyles = createStyles((theme) => ({
     boxSizing: "border-box",
     backgroundImage: `linear-gradient(-60deg, ${
       theme.colors[theme.primaryColor][4]
-    } 0%, ${theme.colors[theme.primaryColor][7]} 100%)`,
+    } 0%, ${theme.colors[theme.primaryColor][6]} 100%)`,
     borderRadius: theme.radius.md,
     padding: theme.spacing.xl * 2.5,
     paddingTop: theme.spacing.xl * 4,
