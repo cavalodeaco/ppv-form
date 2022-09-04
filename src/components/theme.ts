@@ -32,7 +32,7 @@ export const theme: MantineThemeOverride = {
   primaryColor: "ppv",
   primaryShade: 4,
   headings: {
-    fontFamily: "TimeBurner, fantasy, Ubuntu, sans-serif",
+    fontFamily: "TimeBurner, Ubuntu, sans-serif",
     fontWeight: "bold",
   },
 };
