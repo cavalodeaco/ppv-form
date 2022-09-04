@@ -76,6 +76,7 @@ export default function Enrollment() {
           <Warning text="O curso geralmente ocorre aos sábados das 8h às 14h." />
           <Warning text="Tenha paciência, estamos com fila de espera." />
           <Warning text="Entraremos em contato quando tivermos uma turma com vagas." />
+          <Warning text="O curso não fornece a motocicleta para o treinamento" />
         </div>
         <EnrollmentForm />
       </SimpleGrid>
