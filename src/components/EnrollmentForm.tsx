@@ -19,6 +19,7 @@ import { theme } from "./theme";
 import { authorization, responsability, lgpd } from "./data/terms";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
+import { validateBr } from "js-brasil";
 
 const useStyles = createStyles((theme) => ({
   form: {
@@ -50,6 +51,21 @@ const useStyles = createStyles((theme) => ({
 const schema = z.object({
   user: z.object({
     name: z.string().min(1, { message: "O campo nome é obrigatório" }),
+    email: z.string().email({ message: "Informe um endereço de email" }),
+    phone: z.custom((phone) => validateBr.celular(phone), {
+      message: "Informe um número de celular",
+    }),
+    driverLicense: z.object({
+      number: z.custom((cnh) => validateBr.cnh(cnh), {
+        message: "Informe o número da sua CNH",
+      }),
+      date: z
+        .date({
+          required_error: "Informe a data de emissão",
+          invalid_type_error: "Informe a data de emissão",
+        })
+        .max(new Date(), { message: "Informe a data de emissão" }),
+    }),
   }),
 });
 
@@ -88,7 +104,6 @@ export default function EnrollmentForm() {
   const [active, setActive] = useState(0);
 
   const nextStep = () => {
-    console.table(form.values.user);
     console.table(form.values.enroll);
     console.log(form);
 
@@ -124,6 +139,7 @@ export default function EnrollmentForm() {
             />
             <TextInput
               label="E-mail"
+              description="Informe seu melhor e-mail"
               placeholder="jax.teller@gmail.com"
               mt="md"
               withAsterisk
@@ -134,7 +150,8 @@ export default function EnrollmentForm() {
               }}
             />
             <TextInput
-              label="Telefone/WhatsApp"
+              label="Celular/WhatsApp"
+              description="Informe um número de celular com DDD"
               placeholder="(99) 99999-9999"
               mt="md"
               withAsterisk
@@ -146,6 +163,7 @@ export default function EnrollmentForm() {
             />
             <TextInput
               label="Número da CNH"
+              description="É necessário ter habilitação categoria A para realizar o curso"
               placeholder="00123456789"
               mt="md"
               withAsterisk
@@ -261,7 +279,6 @@ export default function EnrollmentForm() {
               label="Termo de Autorização"
               value={[form.values.enroll.terms.authorization.toString()]}
               onChange={(values) => {
-                console.log(values);
                 form.setFieldValue(
                   "enroll.terms.authorization",
                   Boolean(values[1])
@@ -279,7 +296,6 @@ export default function EnrollmentForm() {
               withAsterisk
               value={[form.values.enroll.terms.responsability.toString()]}
               onChange={(values) => {
-                console.log(values);
                 form.setFieldValue(
                   "enroll.terms.responsability",
                   Boolean(values[1])
@@ -298,7 +314,6 @@ export default function EnrollmentForm() {
               withAsterisk
               value={[form.values.enroll.terms.lgpd.toString()]}
               onChange={(values) => {
-                console.log(values);
                 form.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
               }}
               description={
