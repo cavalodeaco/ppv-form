@@ -17,8 +17,8 @@ import { IconUserCheck, IconHelmet, IconLicense } from "@tabler/icons";
 import { useState } from "react";
 import { theme } from "./theme";
 import { authorization, responsability, lgpd } from "./data/terms";
-import { useForm } from "@mantine/form";
-import { randomId } from "@mantine/hooks";
+import { useForm, zodResolver } from "@mantine/form";
+import { z } from "zod";
 
 const useStyles = createStyles((theme) => ({
   form: {
@@ -47,8 +47,15 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const schema = z.object({
+  user: z.object({
+    name: z.string().min(1, { message: "O campo nome é obrigatório" }),
+  }),
+});
+
 export default function EnrollmentForm() {
   const form = useForm({
+    validate: zodResolver(schema),
     initialValues: {
       user: {
         name: "",
@@ -85,10 +92,13 @@ export default function EnrollmentForm() {
     console.table(form.values.enroll);
     console.log(form);
 
-    setActive((current) => (current < 3 ? current + 1 : current));
+    setActive((current) => {
+      if (form.validate().hasErrors) {
+        return current;
+      }
+      return current + 1;
+    });
   };
-  const prevStep = () =>
-    setActive((current) => (current > 0 ? current - 1 : current));
 
   return (
     <div className={classes.form}>
@@ -105,18 +115,18 @@ export default function EnrollmentForm() {
               label="Nome completo"
               placeholder="Jackson Teller"
               mt="md"
-              required
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
+              withAsterisk
               {...form.getInputProps("user.name")}
             />
             <TextInput
               label="E-mail"
               placeholder="jax.teller@gmail.com"
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("user.email")}
               classNames={{
                 input: classes.input,
@@ -127,7 +137,7 @@ export default function EnrollmentForm() {
               label="Telefone/WhatsApp"
               placeholder="(99) 99999-9999"
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("user.phone")}
               classNames={{
                 input: classes.input,
@@ -138,7 +148,7 @@ export default function EnrollmentForm() {
               label="Número da CNH"
               placeholder="00123456789"
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("user.driverLicense.number")}
               classNames={{
                 input: classes.input,
@@ -150,7 +160,7 @@ export default function EnrollmentForm() {
               mt="md"
               locale="pt-br"
               inputFormat="DD/MM/YYYY"
-              required
+              withAsterisk
               {...form.getInputProps("user.driverLicense.date")}
               classNames={{
                 input: classes.input,
@@ -169,7 +179,7 @@ export default function EnrollmentForm() {
             <Select
               label="Cidade do treinamento"
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("enroll.city")}
               classNames={{
                 input: classes.input,
@@ -186,7 +196,7 @@ export default function EnrollmentForm() {
               label="Placa"
               placeholder="AAA9999"
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("enroll.motorcycle.plate")}
               classNames={{
                 input: classes.input,
@@ -197,7 +207,7 @@ export default function EnrollmentForm() {
               label="Marca"
               placeholder=""
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("enroll.motorcycle.brand")}
               classNames={{
                 input: classes.input,
@@ -208,7 +218,7 @@ export default function EnrollmentForm() {
               label="Modelo"
               placeholder=""
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("enroll.motorcycle.model")}
               classNames={{
                 input: classes.input,
@@ -220,7 +230,7 @@ export default function EnrollmentForm() {
               label="Uso da motocicleta"
               defaultValue="motofretista"
               mt="md"
-              required
+              withAsterisk
               {...form.getInputProps("enroll.use")}
               classNames={{
                 input: classes.input,
@@ -252,7 +262,10 @@ export default function EnrollmentForm() {
               value={[form.values.enroll.terms.authorization.toString()]}
               onChange={(values) => {
                 console.log(values);
-                form.setFieldValue("enroll.terms.authorization", Boolean(values[1]));
+                form.setFieldValue(
+                  "enroll.terms.authorization",
+                  Boolean(values[1])
+                );
               }}
               description={
                 <ScrollArea style={{ height: 60 }}>{authorization}</ScrollArea>
@@ -263,11 +276,14 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Responsabilidade"
-              required
+              withAsterisk
               value={[form.values.enroll.terms.responsability.toString()]}
               onChange={(values) => {
                 console.log(values);
-                form.setFieldValue("enroll.terms.responsability", Boolean(values[1]));
+                form.setFieldValue(
+                  "enroll.terms.responsability",
+                  Boolean(values[1])
+                );
               }}
               description={
                 <ScrollArea style={{ height: 60 }}>{responsability}</ScrollArea>
@@ -279,7 +295,7 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Consentimento"
-              required
+              withAsterisk
               value={[form.values.enroll.terms.lgpd.toString()]}
               onChange={(values) => {
                 console.log(values);
@@ -300,11 +316,8 @@ export default function EnrollmentForm() {
             </Text>
           </Stepper.Completed>
         </Stepper>
-        <Group position="center" mt="xl">
-          <Button variant="light" onClick={prevStep}>
-            Anterior
-          </Button>
-          <Button onClick={nextStep}>Próximo</Button>
+        <Group position="right" mt="xl">
+          {active !== 3 && <Button onClick={nextStep}>Próximo</Button>}
         </Group>
       </MantineProvider>
     </div>
