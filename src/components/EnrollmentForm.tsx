@@ -129,9 +129,6 @@ export default function EnrollmentForm() {
   const [active, setActive] = useState(0);
 
   const nextStep = () => {
-    console.table(form.values.enroll);
-    console.log(form);
-
     setActive((current) => {
       const keys = Object.keys(form.validate().errors);
       if (
