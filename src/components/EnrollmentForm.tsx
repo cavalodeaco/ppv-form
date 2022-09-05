@@ -16,7 +16,7 @@ import { DatePicker } from "@mantine/dates";
 import { IconUserCheck, IconHelmet, IconLicense } from "@tabler/icons";
 import { useState } from "react";
 import { theme } from "./theme";
-import { authorization, responsability, lgpd } from "./data/terms";
+import { authorization, responsibility, lgpd } from "./data/terms";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { validateBr } from "js-brasil";
@@ -67,6 +67,31 @@ const schema = z.object({
         .max(new Date(), { message: "Informe a data de emissão" }),
     }),
   }),
+  enroll: z.object({
+    motorcycle: z.object({
+      plate: z.custom((plate) => validateBr.placa(plate), {
+        message: "Informe a placa da moto",
+      }),
+      brand: z.string().min(1, { message: "Informe a marca da moto" }),
+      model: z.string().min(1, { message: "Informe o modelo da moto" }),
+    }),
+    use: z
+      .string()
+      .regex(/(?:[\s]|^)(lazer|motofretista|deslocamento)(?=[\s]|$)/, {
+        message: "Informe o uso da moto",
+      }),
+    terms: z.object({
+      authorization: z.boolean(),
+      responsibility: z.custom((responsibility) => responsibility === true, {
+        message:
+          "O aceite do termo de responsabilidade é obrigatório para a realização do curso",
+      }),
+      lgpd: z.custom((lgpd) => lgpd === true, {
+        message:
+          "O consentimento do uso dos dados é necessário para a inscrição",
+      }),
+    }),
+  }),
 });
 
 export default function EnrollmentForm() {
@@ -92,7 +117,7 @@ export default function EnrollmentForm() {
         use: "",
         terms: {
           authorization: false,
-          responsability: false,
+          responsibility: false,
           lgpd: false,
         },
       },
@@ -104,13 +129,20 @@ export default function EnrollmentForm() {
   const [active, setActive] = useState(0);
 
   const nextStep = () => {
-    console.table(form.values.enroll);
-    console.log(form);
-
     setActive((current) => {
-      if (form.validate().hasErrors) {
+      const keys = Object.keys(form.validate().errors);
+      if (
+        (current === 0 && keys.some((key) => key.startsWith("user."))) ||
+        (current === 1 &&
+          keys.some(
+            (key) =>
+              !key.startsWith("enroll.terms") && key.startsWith("enroll.")
+          )) ||
+        (current === 2 && keys.some((key) => key.startsWith("enroll.terms")))
+      ) {
         return current;
       }
+      form.clearErrors();
       return current + 1;
     });
   };
@@ -294,15 +326,16 @@ export default function EnrollmentForm() {
               mt="md"
               label="Termo de Responsabilidade"
               withAsterisk
-              value={[form.values.enroll.terms.responsability.toString()]}
+              value={[form.values.enroll.terms.responsibility.toString()]}
+              error={form.errors['enroll.terms.responsibility']}
               onChange={(values) => {
                 form.setFieldValue(
-                  "enroll.terms.responsability",
+                  "enroll.terms.responsibility",
                   Boolean(values[1])
                 );
               }}
               description={
-                <ScrollArea style={{ height: 60 }}>{responsability}</ScrollArea>
+                <ScrollArea style={{ height: 60 }}>{responsibility}</ScrollArea>
               }
             >
               <Checkbox value="true" label="Li e concordo" />
@@ -311,6 +344,7 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Consentimento"
+              error={form.errors['enroll.terms.lgpd']}
               withAsterisk
               value={[form.values.enroll.terms.lgpd.toString()]}
               onChange={(values) => {
