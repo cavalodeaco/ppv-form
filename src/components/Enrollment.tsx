@@ -17,7 +17,7 @@ const useStyles = createStyles((theme) => ({
   wrapper: {
     minHeight: 400,
     boxSizing: "border-box",
-    backgroundImage: `linear-gradient(-60deg, ${
+    backgroundImage: `linear-gradient(180deg, ${
       theme.colors[theme.primaryColor][4]
     } 0%, ${theme.colors[theme.primaryColor][6]} 100%)`,
     borderRadius: theme.radius.md,
