@@ -10,9 +10,9 @@ import {
   MantineProvider,
   Checkbox,
   ScrollArea,
+  Divider,
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
-import { DatePicker } from "@mantine/dates";
 import { IconUserCheck, IconHelmet, IconLicense } from "@tabler/icons";
 import { useState } from "react";
 import { theme } from "./theme";
@@ -48,38 +48,22 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const schema = z.object({
+const page1Schema = z.object({
   user: z.object({
     name: z.string().min(1, { message: "O campo nome é obrigatório" }),
-    email: z.string().email({ message: "Informe um endereço de email" }),
     phone: z.custom((phone) => validateBr.celular(phone), {
       message: "Informe um número de celular",
     }),
-    driverLicense: z.object({
-      number: z.custom((cnh) => validateBr.cnh(cnh), {
-        message: "Informe o número da sua CNH",
-      }),
-      date: z
-        .date({
-          required_error: "Informe a data de emissão",
-          invalid_type_error: "Informe a data de emissão",
-        })
-        .max(new Date(), { message: "Informe a data de emissão" }),
+    driverLicense: z.custom((cnh) => validateBr.cnh(cnh), {
+      message: "Informe o número da sua CNH",
     }),
   }),
+});
+
+const page2Schema = z.object({});
+
+const page3Schema = z.object({
   enroll: z.object({
-    motorcycle: z.object({
-      plate: z.custom((plate) => validateBr.placa(plate), {
-        message: "Informe a placa da moto",
-      }),
-      brand: z.string().min(1, { message: "Informe a marca da moto" }),
-      model: z.string().min(1, { message: "Informe o modelo da moto" }),
-    }),
-    use: z
-      .string()
-      .regex(/(?:[\s]|^)(lazer|motofretista|deslocamento)(?=[\s]|$)/, {
-        message: "Informe o uso da moto",
-      }),
     terms: z.object({
       authorization: z.boolean(),
       responsibility: z.custom((responsibility) => responsibility === true, {
@@ -95,26 +79,40 @@ const schema = z.object({
 });
 
 export default function EnrollmentForm() {
-  const form = useForm({
-    validate: zodResolver(schema),
+  const page1 = useForm({
+    validate: zodResolver(page1Schema),
     initialValues: {
       user: {
         name: "",
-        email: "",
         phone: "",
-        driverLicense: {
-          number: "",
-          date: "",
-        },
+        driverLicense: "",
       },
       enroll: {
         city: "curitiba",
+      },
+    },
+  });
+
+  const page2 = useForm({
+    validate: zodResolver(page2Schema),
+    initialValues: {
+      user: {
+        email: "",
+      },
+      enroll: {
         motorcycle: {
-          plate: "",
           brand: "",
           model: "",
         },
         use: "",
+      },
+    },
+  });
+
+  const page3 = useForm({
+    validate: zodResolver(page3Schema),
+    initialValues: {
+      enroll: {
         terms: {
           authorization: false,
           responsibility: false,
@@ -124,28 +122,19 @@ export default function EnrollmentForm() {
     },
   });
 
+  const form = [page1, page2, page3];
+
   const { classes } = useStyles();
 
   const [active, setActive] = useState(0);
 
-  const nextStep = () => {
+  const prevStep = () => setActive((current) => current - 1);
+
+  const nextStep = () =>
     setActive((current) => {
-      const keys = Object.keys(form.validate().errors);
-      if (
-        (current === 0 && keys.some((key) => key.startsWith("user."))) ||
-        (current === 1 &&
-          keys.some(
-            (key) =>
-              !key.startsWith("enroll.terms") && key.startsWith("enroll.")
-          )) ||
-        (current === 2 && keys.some((key) => key.startsWith("enroll.terms")))
-      ) {
-        return current;
-      }
-      form.clearErrors();
-      return current + 1;
+      console.log(form[current].validate());
+      return form[current].validate().hasErrors ? current : current + 1;
     });
-  };
 
   return (
     <div className={classes.form}>
@@ -167,19 +156,7 @@ export default function EnrollmentForm() {
                 label: classes.inputLabel,
               }}
               withAsterisk
-              {...form.getInputProps("user.name")}
-            />
-            <TextInput
-              label="E-mail"
-              description="Informe seu melhor e-mail"
-              placeholder="jax.teller@gmail.com"
-              mt="md"
-              withAsterisk
-              {...form.getInputProps("user.email")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
+              {...page1.getInputProps("user.name")}
             />
             <TextInput
               label="Celular/WhatsApp"
@@ -187,7 +164,7 @@ export default function EnrollmentForm() {
               placeholder="(99) 99999-9999"
               mt="md"
               withAsterisk
-              {...form.getInputProps("user.phone")}
+              {...page1.getInputProps("user.phone")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -199,38 +176,17 @@ export default function EnrollmentForm() {
               placeholder="00123456789"
               mt="md"
               withAsterisk
-              {...form.getInputProps("user.driverLicense.number")}
+              {...page1.getInputProps("user.driverLicense")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
             />
-            <DatePicker
-              placeholder="DD/MM/AAAA"
-              mt="md"
-              locale="pt-br"
-              inputFormat="DD/MM/YYYY"
-              withAsterisk
-              {...form.getInputProps("user.driverLicense.date")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-              label="Data de emissão da CNH"
-            />
-          </Stepper.Step>
-          <Stepper.Step
-            icon={
-              <ThemeIcon variant="filled" size={40} radius={40}>
-                <IconHelmet size={30} stroke={1.5} />
-              </ThemeIcon>
-            }
-          >
             <Select
               label="Cidade do treinamento"
               mt="md"
               withAsterisk
-              {...form.getInputProps("enroll.city")}
+              {...page1.getInputProps("enroll.city")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -242,46 +198,34 @@ export default function EnrollmentForm() {
                 { value: "cambira", label: "Cambira" },
               ]}
             />
+          </Stepper.Step>
+          <Stepper.Step
+            icon={
+              <ThemeIcon variant="filled" size={40} radius={40}>
+                <IconHelmet size={30} stroke={1.5} />
+              </ThemeIcon>
+            }
+          >
             <TextInput
-              label="Placa"
-              placeholder="AAA9999"
+              label="E-mail"
+              description="Informe seu e-mail se deseja receber comunicações sobre o projeto"
+              placeholder="jax.teller@gmail.com"
               mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.motorcycle.plate")}
+              {...page2.getInputProps("user.email")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
             />
-            <TextInput
-              label="Marca"
-              placeholder=""
-              mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.motorcycle.brand")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-            <TextInput
-              label="Modelo"
-              placeholder=""
-              mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.motorcycle.model")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-
+            <Text mt="sm" color="dark">
+              Nos conte um pouco mais sobre você e sua moto:
+            </Text>
+            <Divider my="sm" />
             <Select
               label="Uso da motocicleta"
               defaultValue="motofretista"
               mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.use")}
+              {...page2.getInputProps("enroll.use")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -298,6 +242,26 @@ export default function EnrollmentForm() {
                 { value: "lazer", label: "Somente lazer" },
               ]}
             />
+            <TextInput
+              label="Marca"
+              placeholder=""
+              mt="md"
+              {...page2.getInputProps("enroll.motorcycle.brand")}
+              classNames={{
+                input: classes.input,
+                label: classes.inputLabel,
+              }}
+            />
+            <TextInput
+              label="Modelo"
+              placeholder=""
+              mt="md"
+              {...page2.getInputProps("enroll.motorcycle.model")}
+              classNames={{
+                input: classes.input,
+                label: classes.inputLabel,
+              }}
+            />
           </Stepper.Step>
           <Stepper.Step
             icon={
@@ -309,9 +273,9 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Autorização"
-              value={[form.values.enroll.terms.authorization.toString()]}
+              value={[page3.values.enroll.terms.authorization.toString()]}
               onChange={(values) => {
-                form.setFieldValue(
+                page3.setFieldValue(
                   "enroll.terms.authorization",
                   Boolean(values[1])
                 );
@@ -326,10 +290,10 @@ export default function EnrollmentForm() {
               mt="md"
               label="Termo de Responsabilidade"
               withAsterisk
-              value={[form.values.enroll.terms.responsibility.toString()]}
-              error={form.errors['enroll.terms.responsibility']}
+              value={[page3.values.enroll.terms.responsibility.toString()]}
+              error={page3.errors["enroll.terms.responsibility"]}
               onChange={(values) => {
-                form.setFieldValue(
+                page3.setFieldValue(
                   "enroll.terms.responsibility",
                   Boolean(values[1])
                 );
@@ -344,11 +308,11 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Consentimento"
-              error={form.errors['enroll.terms.lgpd']}
+              error={page3.errors["enroll.terms.lgpd"]}
               withAsterisk
-              value={[form.values.enroll.terms.lgpd.toString()]}
+              value={[page3.values.enroll.terms.lgpd.toString()]}
               onChange={(values) => {
-                form.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
+                page3.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
               }}
               description={
                 <ScrollArea style={{ height: 60 }}>{lgpd}</ScrollArea>
@@ -365,9 +329,16 @@ export default function EnrollmentForm() {
             </Text>
           </Stepper.Completed>
         </Stepper>
-        <Group position="right" mt="xl">
-          {active !== 3 && <Button onClick={nextStep}>Próximo</Button>}
-        </Group>
+        {active !== 3 && (
+          <Group position="right" mt="xl">
+            {active !== 0 && (
+              <Button variant="light" onClick={prevStep}>
+                Anterior
+              </Button>
+            )}
+            <Button onClick={nextStep}>Próximo</Button>
+          </Group>
+        )}
       </MantineProvider>
     </div>
   );
