@@ -83,7 +83,7 @@ export default function Enrollment() {
           <Warning text="O curso geralmente ocorre aos sábados das 8h às 14h." />
           <Warning text="Tenha paciência, estamos com fila de espera." />
           <Warning text="Entraremos em contato quando tivermos uma turma com vagas." />
-          <Warning text="O curso não fornece a moto para o treinamento" />
+          <Warning text="O curso não fornece a moto para o treinamento." />
           <Text className={classes.description} mt="sm" mb={30}>
             <Center inline>
               <ThemeIcon variant="filled" size={30} radius={30}>
