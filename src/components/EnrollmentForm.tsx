@@ -11,6 +11,7 @@ import {
   Checkbox,
   ScrollArea,
   Divider,
+  LoadingOverlay,
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
 import { IconUserCheck, IconHelmet, IconLicense } from "@tabler/icons";
@@ -20,6 +21,7 @@ import { authorization, responsibility, lgpd } from "./data/terms";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { validateBr } from "js-brasil";
+import merge from "lodash.merge";
 
 const useStyles = createStyles((theme) => ({
   form: {
@@ -127,17 +129,37 @@ export default function EnrollmentForm() {
   const { classes } = useStyles();
 
   const [active, setActive] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const prevStep = () => setActive((current) => current - 1);
 
+  const submitForm = async () => {
+    setLoading(true);
+    const data = JSON.stringify(
+      merge({}, page1.values, page2.values, page3.values)
+    );
+    const config = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: data,
+    };
+    const result = await fetch(
+      process.env.REACT_APP_BACKEND_ADDRESS as string,
+      config
+    ).then((response) => response.json());
+    console.log(result);
+    setLoading(false);
+    setActive((current) => current + 1);
+  };
+
   const nextStep = () =>
-    setActive((current) => {
-      console.log(form[current].validate());
-      return form[current].validate().hasErrors ? current : current + 1;
-    });
+    setActive((current) =>
+      form[current].validate().hasErrors ? current : current + 1
+    );
 
   return (
-    <div className={classes.form}>
+    <div className={classes.form} style={{ position: "relative" }}>
+      <LoadingOverlay visible={loading} overlayBlur={2} />
       <MantineProvider theme={{ ...theme, colorScheme: "light" }}>
         <Stepper active={active} radius={40}>
           <Stepper.Step
@@ -336,7 +358,11 @@ export default function EnrollmentForm() {
                 Anterior
               </Button>
             )}
-            <Button onClick={nextStep}>Próximo</Button>
+            {active === 2 ? (
+              <Button onClick={submitForm}>Enviar</Button>
+            ) : (
+              <Button onClick={nextStep}>Próximo</Button>
+            )}
           </Group>
         )}
       </MantineProvider>
