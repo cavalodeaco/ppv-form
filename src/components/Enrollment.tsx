@@ -6,6 +6,8 @@ import {
   ThemeIcon,
   Space,
   Center,
+  Box,
+  Anchor,
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
 import { IconTrafficCone } from "@tabler/icons";
@@ -42,6 +44,11 @@ const useStyles = createStyles((theme) => ({
       maxWidth: "100%",
     },
   },
+
+  anchor: {
+    color: "white",
+    textDecoration: "underline",
+  },
 }));
 
 function Warning({ text }: { text: string }) {
@@ -69,7 +76,7 @@ export default function Enrollment() {
         spacing={50}
         breakpoints={[{ maxWidth: "sm", cols: 1 }]}
       >
-        <div>
+        <Box>
           <Title className={classes.title} mb={30}>
             Inscreva-se
           </Title>
@@ -77,7 +84,24 @@ export default function Enrollment() {
           <Warning text="Tenha paciência, estamos com fila de espera." />
           <Warning text="Entraremos em contato quando tivermos uma turma com vagas." />
           <Warning text="O curso não fornece a moto para o treinamento" />
-        </div>
+          <Text className={classes.description} mt="sm" mb={30}>
+            <Center inline>
+              <ThemeIcon variant="filled" size={30} radius={30}>
+                <IconTrafficCone size={20} stroke={1.5} />
+              </ThemeIcon>
+              <Space w="xs" />
+              Realização:
+              <Space w={4} />
+              <Anchor
+                href="https://lordriders.com/"
+                target="_blank"
+                className={classes.anchor}
+              >
+                Lord Riders Moto Clube
+              </Anchor>
+            </Center>
+          </Text>
+        </Box>
         <EnrollmentForm />
       </SimpleGrid>
     </div>
