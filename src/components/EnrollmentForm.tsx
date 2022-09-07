@@ -12,9 +12,18 @@ import {
   ScrollArea,
   Divider,
   LoadingOverlay,
+  Center,
+  Alert,
+  List,
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
-import { IconUserCheck, IconHelmet, IconLicense } from "@tabler/icons";
+import {
+  IconUserCheck,
+  IconHelmet,
+  IconLicense,
+  IconAlertCircle,
+  IconCircleCheck,
+} from "@tabler/icons";
 import { useState } from "react";
 import { theme } from "./theme";
 import { authorization, responsibility, lgpd } from "./data/terms";
@@ -130,6 +139,7 @@ export default function EnrollmentForm() {
 
   const [active, setActive] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(0);
 
   const prevStep = () => setActive((current) => current - 1);
 
@@ -143,11 +153,32 @@ export default function EnrollmentForm() {
       headers: { "Content-Type": "application/json" },
       body: data,
     };
-    const result = await fetch(
-      process.env.REACT_APP_BACKEND_ADDRESS as string,
-      config
-    ).then((response) => response.json());
-    console.log(result);
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_ADDRESS as string,
+        config
+      );
+      console.log(response.status);
+      if (response.status === 201) {
+        const {message} = await response.json();
+        if (message === "enrolled") {
+          setResult(1);
+        } else {
+          throw new Error(`Invalid response: ${message}`);
+        }
+      }
+      if (response.status === 409) {
+        const {message} = await response.json();
+        if (message === "waiting") {
+          setResult(2);
+        } else {
+          throw new Error(`Invalid response: ${message}`);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setResult(0);
+    }
     setLoading(false);
     setActive((current) => current + 1);
   };
@@ -344,11 +375,71 @@ export default function EnrollmentForm() {
             </Checkbox.Group>
           </Stepper.Step>
           <Stepper.Completed>
-            <Text color={"dark"}>
-              Você está na fila de espera! Nossa equipe entrará em contato por
-              telefone/WhatsApp próximo a data, para agendar a sua turma. Obs.:
-              Cada turma atenderá no máximo 20 alunos.
-            </Text>
+            {
+              [
+                <Alert
+                  icon={<IconAlertCircle size={16} />}
+                  title="Não conseguimos fazer sua inscrição"
+                  color="red.6"
+                >
+                  Tente novamente mais tarde.
+                </Alert>,
+                <Alert
+                  icon={<IconCircleCheck size={16} />}
+                  title="Inscrição confirmada!"
+                  color="teal.6"
+                >
+                  <List
+                    icon={
+                      <ThemeIcon
+                        color="teal.6"
+                        size={24}
+                        radius="xl"
+                        variant="light"
+                      >
+                        <IconCircleCheck size={16} />
+                      </ThemeIcon>
+                    }
+                  >
+                    <List.Item>Você está na fila de espera!</List.Item>
+                    <List.Item>
+                      Nossa equipe entrará em contato por telefone/WhatsApp
+                      próximo a data, para agendar a sua turma.
+                    </List.Item>
+                    <List.Item>
+                      Obs.: Cada turma atenderá no máximo 20 alunos.
+                    </List.Item>
+                  </List>
+                </Alert>,
+                <Alert
+                  icon={<IconAlertCircle size={16} />}
+                  title="Opa! Já tínhamos uma inscrição sua."
+                  color="yellow.6"
+                >
+                  <List
+                    icon={
+                      <ThemeIcon
+                        color="yellow.6"
+                        size={24}
+                        radius="xl"
+                        variant="light"
+                      >
+                        <IconAlertCircle size={16} />
+                      </ThemeIcon>
+                    }
+                  >
+                    <List.Item>Você está na fila de espera!</List.Item>
+                    <List.Item>
+                      Nossa equipe entrará em contato por telefone/WhatsApp
+                      próximo a data, para agendar a sua turma.
+                    </List.Item>
+                    <List.Item>
+                      Obs.: Cada turma atenderá no máximo 20 alunos.
+                    </List.Item>
+                  </List>
+                </Alert>,
+              ][result]
+            }
           </Stepper.Completed>
         </Stepper>
         {active !== 3 && (
