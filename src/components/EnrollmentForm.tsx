@@ -12,7 +12,6 @@ import {
   ScrollArea,
   Divider,
   LoadingOverlay,
-  Center,
   Alert,
   List,
 } from "@mantine/core";
