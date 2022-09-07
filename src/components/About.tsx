@@ -7,10 +7,14 @@ import {
   useMantineTheme,
   createStyles,
   Highlight,
+  Stack,
+  Image,
+  Box,
 } from "@mantine/core";
 import { IconSchool, IconCoinOff, IconHelmet, TablerIcon } from "@tabler/icons";
 // https://tabler-icons.io/
 import TextPPV from "./TextPPV";
+import logo from "./img/brasao_lrmc.svg";
 
 const data = [
   {
@@ -26,7 +30,7 @@ const data = [
   {
     icon: IconCoinOff,
     title: "Sem custo",
-    description: "Curso gratuito oferecido por volutários treinados",
+    description: "Curso gratuito oferecido por voluntários treinados",
   },
 ];
 
@@ -54,6 +58,11 @@ export function Feature({ icon: Icon, title, description }: FeatureProps) {
 }
 
 const useStyles = createStyles((theme) => ({
+
+  backgroundGradient: {
+    backgroundImage: theme.fn.gradient({ from: 'dark.6', to: 'dark.9', deg: 180 }),
+  },
+  
   wrapper: {
     paddingTop: theme.spacing.xl * 4,
     paddingBottom: theme.spacing.xl * 4,
@@ -65,10 +74,16 @@ const useStyles = createStyles((theme) => ({
 
   title: {
     fontSize: 34,
-    [theme.fn.smallerThan('sm')]:  {
+    [theme.fn.smallerThan("sm")]: {
       fontSize: 26,
-    }
-  }
+    },
+  },
+
+  image: {
+    width: "400px",
+    maxWidth: "80%",
+    maxHeight: "50%",
+  },
 }));
 
 export function About() {
@@ -78,9 +93,16 @@ export function About() {
   ));
 
   return (
-    <div id="sobre">
+    <div id="sobre" className={classes.backgroundGradient}>
       <Container className={classes.wrapper}>
-        <Title order={1} align="center" transform="uppercase" italic p={"xl"} className={classes.title}>
+        <Title
+          order={1}
+          align="center"
+          transform="uppercase"
+          italic
+          p={"xl"}
+          className={classes.title}
+        >
           Curso de pilotagem defensiva <TextPPV text={"Pilotando Para Vida"} />
         </Title>
 
@@ -109,14 +131,20 @@ export function About() {
 
         <SimpleGrid
           mt={60}
-          cols={3}
+          cols={2}
           spacing={theme.spacing.xl * 2}
           breakpoints={[
             { maxWidth: 980, cols: 2, spacing: "xl" },
             { maxWidth: 755, cols: 1, spacing: "xl" },
           ]}
         >
-          {features}
+          <Stack>{features}</Stack>
+          <Box>
+            <Title order={3}>Realização:</Title>
+            <Box className={classes.image}>
+              <Image src={logo} alt="Lord Riders Moto Clube" withPlaceholder />
+            </Box>
+          </Box>
         </SimpleGrid>
       </Container>
     </div>

@@ -8,7 +8,7 @@ import { theme } from "./theme";
 import { useDocumentTitle } from "@mantine/hooks";
 
 export default function App() {
-  useDocumentTitle('Pilotando Para Vida');
+  useDocumentTitle("Pilotando Para Vida");
   return (
     <MantineProvider
       theme={{ ...theme, radius: 0 }}

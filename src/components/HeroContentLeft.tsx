@@ -1,4 +1,11 @@
-import { createStyles, Overlay, Container, Image, Box } from "@mantine/core";
+import {
+  createStyles,
+  Overlay,
+  Container,
+  Image,
+  Box,
+  Grid,
+} from "@mantine/core";
 import hero from "./img/hero.jpeg";
 import logo from "./img/logoppv.svg";
 
@@ -11,27 +18,17 @@ const useStyles = createStyles((theme) => ({
   },
 
   container: {
-    height: 700,
+    height: "calc(min(100vh - 60px, 100vw))",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    paddingBottom: theme.spacing.xl * 6,
+    justifyContent: "center",
     zIndex: 1,
     position: "relative",
-
-    [theme.fn.smallerThan("sm")]: {
-      height: 500,
-      paddingBottom: theme.spacing.xl * 3,
-    },
   },
 
   image: {
-    width: "400px",
-    maxWidth: "50%",
-    [theme.fn.smallerThan("sm")]: {
-      maxWidth: "50%",
-    },
+    width: "100%",
+    maxWidth: "400px",
   },
 }));
 
@@ -47,9 +44,13 @@ export function HeroContentLeft() {
       />
 
       <Container className={classes.container}>
-        <Box className={classes.image}>
-          <Image src={logo} alt="Pilotando Para Vida" withPlaceholder />
-        </Box>
+        <Grid>
+          <Grid.Col offset={6} span={6}>
+            <Box className={classes.image}>
+              <Image src={logo} alt="Pilotando Para Vida" withPlaceholder />
+            </Box>
+          </Grid.Col>
+        </Grid>
       </Container>
     </div>
   );
