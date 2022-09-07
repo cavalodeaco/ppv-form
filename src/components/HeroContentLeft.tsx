@@ -1,6 +1,14 @@
-import { createStyles, Overlay, Container, Image, Box } from "@mantine/core";
+import {
+  createStyles,
+  Overlay,
+  Container,
+  Image,
+  Box,
+  Grid,
+} from "@mantine/core";
 import hero from "./img/hero.jpeg";
-import logo from "./img/logoppv.svg";
+import logoPPV from "./img/logoppv.svg";
+import logoLRMC from "./img/brasao_lrmc.png";
 
 const useStyles = createStyles((theme) => ({
   hero: {
@@ -11,27 +19,34 @@ const useStyles = createStyles((theme) => ({
   },
 
   container: {
-    height: 700,
+    height: "calc(100vh - 60px)",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    paddingBottom: theme.spacing.xl * 6,
+    justifyContent: "center",
+    alignItems: "center",
+    // paddingBottom: theme.spacing.xl * 6,
     zIndex: 1,
     position: "relative",
 
-    [theme.fn.smallerThan("sm")]: {
-      height: 500,
-      paddingBottom: theme.spacing.xl * 3,
+    [theme.fn.smallerThan("md")]: {
+      height: "calc(100vw - 60px)",
+      // paddingBottom: theme.spacing.xl * 3,
     },
   },
 
-  image: {
-    width: "400px",
-    maxWidth: "50%",
-    [theme.fn.smallerThan("sm")]: {
-      maxWidth: "50%",
+  box: {
+    width: "calc(50vh - 60px)",
+    height: "calc(50vh - 60px)",
+    [theme.fn.smallerThan("md")]: {
+      width: "calc(50vw - 60px)",
+      height: "calc(50vw - 60px)",
     },
+    display: "flex",
+    justifyContent: "center",
+  },
+
+  image: {
+    width: "80%",
   },
 }));
 
@@ -45,12 +60,26 @@ export function HeroContentLeft() {
         opacity={1}
         zIndex={0}
       />
-
-      <Container className={classes.container}>
-        <Box className={classes.image}>
-          <Image src={logo} alt="Pilotando Para Vida" withPlaceholder />
-        </Box>
-      </Container>
+      <Grid>
+        <Grid.Col offset={6} span={6}>
+          <Container className={classes.container}>
+            <Box className={classes.box}>
+              <Box className={classes.image}>
+                <Image
+                  src={logoLRMC}
+                  alt="Lord Riders Moto Clube"
+                  withPlaceholder
+                />
+              </Box>
+            </Box>
+            <Box className={classes.box}>
+              <Box className={classes.image}>
+                <Image src={logoPPV} alt="Pilotando Para Vida" withPlaceholder />
+              </Box>
+            </Box>
+          </Container>
+        </Grid.Col>
+      </Grid>
     </div>
   );
 }
