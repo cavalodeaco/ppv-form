@@ -157,7 +157,6 @@ export default function EnrollmentForm() {
         process.env.REACT_APP_BACKEND_ADDRESS as string,
         config
       );
-      console.log(response.status);
       if (response.status === 201) {
         const {message} = await response.json();
         if (message === "enrolled") {
@@ -175,7 +174,7 @@ export default function EnrollmentForm() {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setResult(0);
     }
     setLoading(false);
