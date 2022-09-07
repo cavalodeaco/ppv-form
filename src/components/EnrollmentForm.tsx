@@ -54,10 +54,8 @@ const page1Schema = z.object({
     phone: z.custom((phone) => validateBr.celular(phone), {
       message: "Informe um número de celular",
     }),
-    driverLicense: z.object({
-      number: z.custom((cnh) => validateBr.cnh(cnh), {
-        message: "Informe o número da sua CNH",
-      }),
+    driverLicense: z.custom((cnh) => validateBr.cnh(cnh), {
+      message: "Informe o número da sua CNH",
     }),
   }),
 });
@@ -87,9 +85,7 @@ export default function EnrollmentForm() {
       user: {
         name: "",
         phone: "",
-        driverLicense: {
-          number: "",
-        },
+        driverLicense: "",
       },
       enroll: {
         city: "curitiba",
@@ -105,7 +101,6 @@ export default function EnrollmentForm() {
       },
       enroll: {
         motorcycle: {
-          plate: "",
           brand: "",
           model: "",
         },
@@ -181,7 +176,7 @@ export default function EnrollmentForm() {
               placeholder="00123456789"
               mt="md"
               withAsterisk
-              {...page1.getInputProps("user.driverLicense.number")}
+              {...page1.getInputProps("user.driverLicense")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
