@@ -10,16 +10,26 @@ import {
   MantineProvider,
   Checkbox,
   ScrollArea,
+  Divider,
+  LoadingOverlay,
+  Alert,
+  List,
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
-import { DatePicker } from "@mantine/dates";
-import { IconUserCheck, IconHelmet, IconLicense } from "@tabler/icons";
+import {
+  IconUserCheck,
+  IconHelmet,
+  IconLicense,
+  IconAlertCircle,
+  IconCircleCheck,
+} from "@tabler/icons";
 import { useState } from "react";
 import { theme } from "./theme";
 import { authorization, responsibility, lgpd } from "./data/terms";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { validateBr } from "js-brasil";
+import merge from "lodash.merge";
 
 const useStyles = createStyles((theme) => ({
   form: {
@@ -48,38 +58,22 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const schema = z.object({
+const page1Schema = z.object({
   user: z.object({
     name: z.string().min(1, { message: "O campo nome é obrigatório" }),
-    email: z.string().email({ message: "Informe um endereço de email" }),
     phone: z.custom((phone) => validateBr.celular(phone), {
       message: "Informe um número de celular",
     }),
-    driverLicense: z.object({
-      number: z.custom((cnh) => validateBr.cnh(cnh), {
-        message: "Informe o número da sua CNH",
-      }),
-      date: z
-        .date({
-          required_error: "Informe a data de emissão",
-          invalid_type_error: "Informe a data de emissão",
-        })
-        .max(new Date(), { message: "Informe a data de emissão" }),
+    driverLicense: z.custom((cnh) => validateBr.cnh(cnh), {
+      message: "Informe o número da sua CNH",
     }),
   }),
+});
+
+const page2Schema = z.object({});
+
+const page3Schema = z.object({
   enroll: z.object({
-    motorcycle: z.object({
-      plate: z.custom((plate) => validateBr.placa(plate), {
-        message: "Informe a placa da moto",
-      }),
-      brand: z.string().min(1, { message: "Informe a marca da moto" }),
-      model: z.string().min(1, { message: "Informe o modelo da moto" }),
-    }),
-    use: z
-      .string()
-      .regex(/(?:[\s]|^)(lazer|motofretista|deslocamento)(?=[\s]|$)/, {
-        message: "Informe o uso da moto",
-      }),
     terms: z.object({
       authorization: z.boolean(),
       responsibility: z.custom((responsibility) => responsibility === true, {
@@ -95,26 +89,40 @@ const schema = z.object({
 });
 
 export default function EnrollmentForm() {
-  const form = useForm({
-    validate: zodResolver(schema),
+  const page1 = useForm({
+    validate: zodResolver(page1Schema),
     initialValues: {
       user: {
         name: "",
-        email: "",
         phone: "",
-        driverLicense: {
-          number: "",
-          date: "",
-        },
+        driverLicense: "",
       },
       enroll: {
         city: "curitiba",
+      },
+    },
+  });
+
+  const page2 = useForm({
+    validate: zodResolver(page2Schema),
+    initialValues: {
+      user: {
+        email: "",
+      },
+      enroll: {
         motorcycle: {
-          plate: "",
           brand: "",
           model: "",
         },
         use: "",
+      },
+    },
+  });
+
+  const page3 = useForm({
+    validate: zodResolver(page3Schema),
+    initialValues: {
+      enroll: {
         terms: {
           authorization: false,
           responsibility: false,
@@ -124,31 +132,63 @@ export default function EnrollmentForm() {
     },
   });
 
+  const form = [page1, page2, page3];
+
   const { classes } = useStyles();
 
   const [active, setActive] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(0);
 
-  const nextStep = () => {
-    setActive((current) => {
-      const keys = Object.keys(form.validate().errors);
-      if (
-        (current === 0 && keys.some((key) => key.startsWith("user."))) ||
-        (current === 1 &&
-          keys.some(
-            (key) =>
-              !key.startsWith("enroll.terms") && key.startsWith("enroll.")
-          )) ||
-        (current === 2 && keys.some((key) => key.startsWith("enroll.terms")))
-      ) {
-        return current;
+  const prevStep = () => setActive((current) => current - 1);
+
+  const submitForm = async () => {
+    setLoading(true);
+    const data = JSON.stringify(
+      merge({}, page1.values, page2.values, page3.values)
+    );
+    const config = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: data,
+    };
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_ADDRESS as string,
+        config
+      );
+      if (response.status === 201) {
+        const {message} = await response.json();
+        if (message === "enrolled") {
+          setResult(1);
+        } else {
+          throw new Error(`Invalid response: ${message}`);
+        }
       }
-      form.clearErrors();
-      return current + 1;
-    });
+      if (response.status === 409) {
+        const {message} = await response.json();
+        if (message === "waiting") {
+          setResult(2);
+        } else {
+          throw new Error(`Invalid response: ${message}`);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      setResult(0);
+    }
+    setLoading(false);
+    setActive((current) => current + 1);
   };
 
+  const nextStep = () =>
+    setActive((current) =>
+      form[current].validate().hasErrors ? current : current + 1
+    );
+
   return (
-    <div className={classes.form}>
+    <div className={classes.form} style={{ position: "relative" }}>
+      <LoadingOverlay visible={loading} overlayBlur={2} />
       <MantineProvider theme={{ ...theme, colorScheme: "light" }}>
         <Stepper active={active} radius={40}>
           <Stepper.Step
@@ -167,19 +207,7 @@ export default function EnrollmentForm() {
                 label: classes.inputLabel,
               }}
               withAsterisk
-              {...form.getInputProps("user.name")}
-            />
-            <TextInput
-              label="E-mail"
-              description="Informe seu melhor e-mail"
-              placeholder="jax.teller@gmail.com"
-              mt="md"
-              withAsterisk
-              {...form.getInputProps("user.email")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
+              {...page1.getInputProps("user.name")}
             />
             <TextInput
               label="Celular/WhatsApp"
@@ -187,7 +215,7 @@ export default function EnrollmentForm() {
               placeholder="(99) 99999-9999"
               mt="md"
               withAsterisk
-              {...form.getInputProps("user.phone")}
+              {...page1.getInputProps("user.phone")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -199,38 +227,17 @@ export default function EnrollmentForm() {
               placeholder="00123456789"
               mt="md"
               withAsterisk
-              {...form.getInputProps("user.driverLicense.number")}
+              {...page1.getInputProps("user.driverLicense")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
             />
-            <DatePicker
-              placeholder="DD/MM/AAAA"
-              mt="md"
-              locale="pt-br"
-              inputFormat="DD/MM/YYYY"
-              withAsterisk
-              {...form.getInputProps("user.driverLicense.date")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-              label="Data de emissão da CNH"
-            />
-          </Stepper.Step>
-          <Stepper.Step
-            icon={
-              <ThemeIcon variant="filled" size={40} radius={40}>
-                <IconHelmet size={30} stroke={1.5} />
-              </ThemeIcon>
-            }
-          >
             <Select
               label="Cidade do treinamento"
               mt="md"
               withAsterisk
-              {...form.getInputProps("enroll.city")}
+              {...page1.getInputProps("enroll.city")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -242,46 +249,34 @@ export default function EnrollmentForm() {
                 { value: "cambira", label: "Cambira" },
               ]}
             />
+          </Stepper.Step>
+          <Stepper.Step
+            icon={
+              <ThemeIcon variant="filled" size={40} radius={40}>
+                <IconHelmet size={30} stroke={1.5} />
+              </ThemeIcon>
+            }
+          >
             <TextInput
-              label="Placa"
-              placeholder="AAA9999"
+              label="E-mail"
+              description="Informe seu e-mail se deseja receber comunicações sobre o projeto"
+              placeholder="jax.teller@gmail.com"
               mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.motorcycle.plate")}
+              {...page2.getInputProps("user.email")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
             />
-            <TextInput
-              label="Marca"
-              placeholder=""
-              mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.motorcycle.brand")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-            <TextInput
-              label="Modelo"
-              placeholder=""
-              mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.motorcycle.model")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-
+            <Text mt="sm" color="dark">
+              Nos conte um pouco mais sobre você e sua moto:
+            </Text>
+            <Divider my="sm" />
             <Select
               label="Uso da motocicleta"
               defaultValue="motofretista"
               mt="md"
-              withAsterisk
-              {...form.getInputProps("enroll.use")}
+              {...page2.getInputProps("enroll.use")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -298,6 +293,26 @@ export default function EnrollmentForm() {
                 { value: "lazer", label: "Somente lazer" },
               ]}
             />
+            <TextInput
+              label="Marca"
+              placeholder=""
+              mt="md"
+              {...page2.getInputProps("enroll.motorcycle.brand")}
+              classNames={{
+                input: classes.input,
+                label: classes.inputLabel,
+              }}
+            />
+            <TextInput
+              label="Modelo"
+              placeholder=""
+              mt="md"
+              {...page2.getInputProps("enroll.motorcycle.model")}
+              classNames={{
+                input: classes.input,
+                label: classes.inputLabel,
+              }}
+            />
           </Stepper.Step>
           <Stepper.Step
             icon={
@@ -309,9 +324,9 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Autorização"
-              value={[form.values.enroll.terms.authorization.toString()]}
+              value={[page3.values.enroll.terms.authorization.toString()]}
               onChange={(values) => {
-                form.setFieldValue(
+                page3.setFieldValue(
                   "enroll.terms.authorization",
                   Boolean(values[1])
                 );
@@ -326,10 +341,10 @@ export default function EnrollmentForm() {
               mt="md"
               label="Termo de Responsabilidade"
               withAsterisk
-              value={[form.values.enroll.terms.responsibility.toString()]}
-              error={form.errors['enroll.terms.responsibility']}
+              value={[page3.values.enroll.terms.responsibility.toString()]}
+              error={page3.errors["enroll.terms.responsibility"]}
               onChange={(values) => {
-                form.setFieldValue(
+                page3.setFieldValue(
                   "enroll.terms.responsibility",
                   Boolean(values[1])
                 );
@@ -344,11 +359,11 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Consentimento"
-              error={form.errors['enroll.terms.lgpd']}
+              error={page3.errors["enroll.terms.lgpd"]}
               withAsterisk
-              value={[form.values.enroll.terms.lgpd.toString()]}
+              value={[page3.values.enroll.terms.lgpd.toString()]}
               onChange={(values) => {
-                form.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
+                page3.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
               }}
               description={
                 <ScrollArea style={{ height: 60 }}>{lgpd}</ScrollArea>
@@ -358,16 +373,87 @@ export default function EnrollmentForm() {
             </Checkbox.Group>
           </Stepper.Step>
           <Stepper.Completed>
-            <Text color={"dark"}>
-              Você está na fila de espera! Nossa equipe entrará em contato por
-              telefone/WhatsApp próximo a data, para agendar a sua turma. Obs.:
-              Cada turma atenderá no máximo 20 alunos.
-            </Text>
+            {
+              [
+                <Alert
+                  icon={<IconAlertCircle size={16} />}
+                  title="Não conseguimos fazer sua inscrição"
+                  color="red.6"
+                >
+                  Tente novamente mais tarde.
+                </Alert>,
+                <Alert
+                  icon={<IconCircleCheck size={16} />}
+                  title="Inscrição confirmada!"
+                  color="teal.6"
+                >
+                  <List
+                    icon={
+                      <ThemeIcon
+                        color="teal.6"
+                        size={24}
+                        radius="xl"
+                        variant="light"
+                      >
+                        <IconCircleCheck size={16} />
+                      </ThemeIcon>
+                    }
+                  >
+                    <List.Item>Você está na fila de espera!</List.Item>
+                    <List.Item>
+                      Nossa equipe entrará em contato por telefone/WhatsApp
+                      próximo a data, para agendar a sua turma.
+                    </List.Item>
+                    <List.Item>
+                      Obs.: Cada turma atenderá no máximo 20 alunos.
+                    </List.Item>
+                  </List>
+                </Alert>,
+                <Alert
+                  icon={<IconAlertCircle size={16} />}
+                  title="Opa! Já tínhamos uma inscrição sua."
+                  color="yellow.6"
+                >
+                  <List
+                    icon={
+                      <ThemeIcon
+                        color="yellow.6"
+                        size={24}
+                        radius="xl"
+                        variant="light"
+                      >
+                        <IconAlertCircle size={16} />
+                      </ThemeIcon>
+                    }
+                  >
+                    <List.Item>Você está na fila de espera!</List.Item>
+                    <List.Item>
+                      Nossa equipe entrará em contato por telefone/WhatsApp
+                      próximo a data, para agendar a sua turma.
+                    </List.Item>
+                    <List.Item>
+                      Obs.: Cada turma atenderá no máximo 20 alunos.
+                    </List.Item>
+                  </List>
+                </Alert>,
+              ][result]
+            }
           </Stepper.Completed>
         </Stepper>
-        <Group position="right" mt="xl">
-          {active !== 3 && <Button onClick={nextStep}>Próximo</Button>}
-        </Group>
+        {active !== 3 && (
+          <Group position="right" mt="xl">
+            {active !== 0 && (
+              <Button variant="light" onClick={prevStep}>
+                Anterior
+              </Button>
+            )}
+            {active === 2 ? (
+              <Button onClick={submitForm}>Enviar</Button>
+            ) : (
+              <Button onClick={nextStep}>Próximo</Button>
+            )}
+          </Group>
+        )}
       </MantineProvider>
     </div>
   );
