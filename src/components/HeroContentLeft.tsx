@@ -6,7 +6,7 @@ import {
   Box,
   Grid,
 } from "@mantine/core";
-import hero from "./img/hero.jpeg";
+import hero from "./img/hero.webp";
 import logo from "./img/logoppv.svg";
 
 const useStyles = createStyles((theme) => ({
