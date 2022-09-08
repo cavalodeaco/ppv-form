@@ -9,9 +9,12 @@ import {
   Paper,
   Transition,
   Anchor,
+  Center,
+  Space,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import TextPPV from "./TextPPV";
+import ppvicon from "./img/iconppv.svg";
 
 const HEADER_HEIGHT = 60;
 
@@ -138,7 +141,11 @@ export function HeaderResponsive() {
     <Header height={HEADER_HEIGHT} className={classes.root}>
       <Container className={classes.header}>
         <Title order={3} transform={"uppercase"} italic>
-          Pilotando Para <TextPPV text="Vida" />
+          <Center>
+            <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
+            <Space w={"xs"} />
+            Pilotando Para <TextPPV text="Vida" />
+          </Center>
         </Title>
         <Group spacing={5} className={classes.links}>
           {items}
