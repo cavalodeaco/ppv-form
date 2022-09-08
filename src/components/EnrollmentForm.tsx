@@ -143,42 +143,44 @@ export default function EnrollmentForm() {
   const prevStep = () => setActive((current) => current - 1);
 
   const submitForm = async () => {
-    setLoading(true);
-    const data = JSON.stringify(
-      merge({}, page1.values, page2.values, page3.values)
-    );
-    const config = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: data,
-    };
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_ADDRESS as string,
-        config
+    if (!form[form.length - 1].validate().hasErrors) {
+      setLoading(true);
+      const data = JSON.stringify(
+        merge({}, page1.values, page2.values, page3.values)
       );
-      if (response.status === 201) {
-        const {message} = await response.json();
-        if (message === "enrolled") {
-          setResult(1);
-        } else {
-          throw new Error(`Invalid response: ${message}`);
+      const config = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: data,
+      };
+      try {
+        const response = await fetch(
+          process.env.REACT_APP_BACKEND_ADDRESS as string,
+          config
+        );
+        if (response.status === 201) {
+          const { message } = await response.json();
+          if (message === "enrolled") {
+            setResult(1);
+          } else {
+            throw new Error(`Invalid response: ${message}`);
+          }
         }
-      }
-      if (response.status === 409) {
-        const {message} = await response.json();
-        if (message === "waiting") {
-          setResult(2);
-        } else {
-          throw new Error(`Invalid response: ${message}`);
+        if (response.status === 409) {
+          const { message } = await response.json();
+          if (message === "waiting") {
+            setResult(2);
+          } else {
+            throw new Error(`Invalid response: ${message}`);
+          }
         }
+      } catch (error) {
+        console.error(error);
+        setResult(0);
       }
-    } catch (error) {
-      console.error(error);
-      setResult(0);
+      setLoading(false);
+      setActive((current) => current + 1);
     }
-    setLoading(false);
-    setActive((current) => current + 1);
   };
 
   const nextStep = () =>
