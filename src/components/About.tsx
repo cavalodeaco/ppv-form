@@ -3,6 +3,7 @@ import {
   Text,
   Title,
   Container,
+  Center,
   SimpleGrid,
   useMantineTheme,
   createStyles,
@@ -58,11 +59,14 @@ export function Feature({ icon: Icon, title, description }: FeatureProps) {
 }
 
 const useStyles = createStyles((theme) => ({
-
   backgroundGradient: {
-    backgroundImage: theme.fn.gradient({ from: 'dark.6', to: 'dark.9', deg: 180 }),
+    backgroundImage: theme.fn.gradient({
+      from: "dark.6",
+      to: "dark.9",
+      deg: 180,
+    }),
   },
-  
+
   wrapper: {
     paddingTop: theme.spacing.xl * 4,
     paddingBottom: theme.spacing.xl * 4,
@@ -141,9 +145,15 @@ export function About() {
           <Stack>{features}</Stack>
           <Box>
             <Title order={3}>Realização:</Title>
-            <Box className={classes.image}>
-              <Image src={logo} alt="Lord Riders Moto Clube" withPlaceholder />
-            </Box>
+            <Center>
+              <Box className={classes.image}>
+                <Image
+                  src={logo}
+                  alt="Lord Riders Moto Clube"
+                  withPlaceholder
+                />
+              </Box>
+            </Center>
           </Box>
         </SimpleGrid>
       </Container>
