@@ -152,7 +152,7 @@ export function HeaderResponsive() {
           size="sm"
         />
 
-        <Transition transition="pop-top-right" duration={200} mounted={opened}>
+        <Transition transition="scale-y" duration={200} mounted={opened}>
           {(styles) => (
             <Paper className={classes.dropdown} withBorder style={styles}>
               {items}

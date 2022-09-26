@@ -1,24 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import EnrollmentForm from "../components/EnrollmentForm";
 import userEvent from "@testing-library/user-event";
-import { setupServer } from "msw/node";
-import { rest } from 'msw'
+import { setupServer, SetupServerApi } from "msw/node";
+import { rest } from "msw";
 
 // using Mock Service Worker library to declaratively mock API communication
 // https://mswjs.io/docs/getting-started/
-const server = setupServer(
-  rest.post(process.env.REACT_APP_BACKEND_ADDRESS as string, (req, res, ctx) => {
-    return res(ctx.status(201), ctx.json({ message: "enrolled" }));
-  })
-);
-
-// Establish API mocking before all tests.
-beforeAll(() => server.listen());
-// Reset any request handlers that we may add during the tests,
-// so they don't affect other tests.
-afterEach(() => server.resetHandlers());
-// Clean up after the tests are finished.
-afterAll(() => server.close());
+const createServer = (status: number, json: Object) => {
+  return setupServer(
+    rest.post(
+      process.env.REACT_APP_BACKEND_ADDRESS as string,
+      (req, res, ctx) => {
+        return res(ctx.status(status), ctx.json(json));
+      }
+    )
+  );
+};
 
 // solves "ResizeObserver is not defined" error when running Jest"
 // https://github.com/ZeeCoder/use-resize-observer/issues/40
@@ -33,6 +30,21 @@ const nextPage = async () => {
   await userEvent.click(
     screen.getByRole("button", {
       name: /próximo/i,
+    })
+  );
+};
+
+const fillMandatoryAndSubmit = async () => {
+  await fillPage1(); // mandatory fields
+  await nextPage(); // page 2
+  await nextPage(); // page 3
+  const checkboxes = screen.getAllByText("Li e concordo");
+  for (const checkbox of checkboxes) {
+    await userEvent.click(checkbox);
+  }
+  await userEvent.click(
+    screen.getByRole("button", {
+      name: /enviar/i,
     })
   );
 };
@@ -56,6 +68,15 @@ const fillPage1 = async () => {
     }),
     "00123456789"
   );
+};
+
+const submitToServer = async (server: SetupServerApi, expected: RegExp) => {
+  server.listen();
+  render(<EnrollmentForm />);
+  await fillMandatoryAndSubmit();
+  const message = await screen.findByText(expected);
+  expect(message).toBeInTheDocument();
+  server.close();
 };
 
 describe("The EnrollmentForm component - page 1", () => {
@@ -137,21 +158,32 @@ describe("Mandatory fields form submission", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("fills mandatory fields and submit", async () => {
-    render(<EnrollmentForm />);
-    await fillPage1(); // mandatory fields
-    await nextPage(); // page 2
-    await nextPage(); // page 3
-    const checkboxes = screen.getAllByText("Li e concordo");
-    for (const checkbox of checkboxes) {
-      await userEvent.click(checkbox);
-    }
-    await userEvent.click(
-      screen.getByRole("button", {
-        name: /enviar/i,
-      })
+  it("fills mandatory fields and submit for the first time", async () => {
+    await submitToServer(
+      createServer(201, { message: "enrolled" }),
+      /inscrição confirmada!/i
     );
-    const message = await screen.findByText(/inscrição confirmada!/i);
-    expect(message).toBeInTheDocument();
   });
+
+  it("fills mandatory fields and submit for the second time", async () => {
+    await submitToServer(
+      createServer(409, { message: "waiting" }),
+      /Opa! Já tínhamos uma inscrição sua./i
+    );
+  });
+
+  it("handles wrong message from 201 response", async () => {
+    await submitToServer(
+      createServer(201, "enrolled" ),
+      /Não conseguimos fazer sua inscrição/i
+    );
+  });
+
+  it("handles wrong message from 409 response", async () => {
+    await submitToServer(
+      createServer(409, "waiting" ),
+      /Não conseguimos fazer sua inscrição/i
+    );
+  });
+
 });
