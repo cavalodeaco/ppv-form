@@ -187,3 +187,23 @@ describe("Mandatory fields form submission", () => {
   });
 
 });
+
+describe("The 'Anterior' button", () => {
+  it('moves from page 2, back to page 1', async () => {
+    render(<EnrollmentForm />);
+    await fillPage1();
+    // move from page 1 to page 2
+    await nextPage();
+    // get button and move back to page 1
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /anterior/i,
+      })
+    );
+    // there is no 'Anterior' button in the first page
+    const button = screen.queryByRole("button", {
+      name: /anterior/i,
+    });
+    expect(button).not.toBeInTheDocument();
+  });
+});
