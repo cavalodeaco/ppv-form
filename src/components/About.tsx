@@ -10,29 +10,32 @@ import {
   Stack,
   Image,
   Box,
-} from '@mantine/core';
-import {
-  IconSchool, IconCoinOff, IconHelmet, TablerIcon,
-} from '@tabler/icons';
+} from "@mantine/core";
 // https://tabler-icons.io/
-import TextPPV from './TextPPV';
-import logo from './img/brasao_lrmc.svg';
+import { IconSchool, IconCoinOff, IconHelmet, TablerIcon } from "@tabler/icons";
+import { ReactElement } from "react";
+import { uuid } from "uuidv4";
+import TextPPV from "./TextPPV";
+import logo from "./img/brasao_lrmc.svg";
 
 const data = [
   {
     icon: IconSchool,
-    title: 'Instrução teórica',
-    description: '2 horas de instrução teórica sobre pilotagem defensiva',
+    title: "Instrução teórica",
+    description: "2 horas de instrução teórica sobre pilotagem defensiva",
+    id: uuid(),
   },
   {
     icon: IconHelmet,
-    title: 'Atividade prática',
-    description: '4 horas de atividades práticas em pistas pré-estabelecidas',
+    title: "Atividade prática",
+    description: "4 horas de atividades práticas em pistas pré-estabelecidas",
+    id: uuid(),
   },
   {
     icon: IconCoinOff,
-    title: 'Sem custo',
-    description: 'Curso gratuito oferecido por voluntários treinados',
+    title: "Sem custo",
+    description: "Curso gratuito oferecido por voluntários treinados",
+    id: uuid(),
   },
 ];
 
@@ -42,7 +45,11 @@ interface FeatureProps {
   description: React.ReactNode;
 }
 
-export function Feature({ icon: Icon, title, description }: FeatureProps) {
+export function Feature({
+  icon: Icon,
+  title,
+  description,
+}: FeatureProps): ReactElement {
   const theme = useMantineTheme();
   return (
     <div>
@@ -60,9 +67,12 @@ export function Feature({ icon: Icon, title, description }: FeatureProps) {
 }
 
 const useStyles = createStyles((theme) => ({
-
   backgroundGradient: {
-    backgroundImage: theme.fn.gradient({ from: 'dark.6', to: 'dark.9', deg: 180 }),
+    backgroundImage: theme.fn.gradient({
+      from: "dark.6",
+      to: "dark.9",
+      deg: 180,
+    }),
   },
 
   wrapper: {
@@ -76,22 +86,27 @@ const useStyles = createStyles((theme) => ({
 
   title: {
     fontSize: 34,
-    [theme.fn.smallerThan('sm')]: {
+    [theme.fn.smallerThan("sm")]: {
       fontSize: 26,
     },
   },
 
   image: {
-    width: '400px',
-    maxWidth: '80%',
-    maxHeight: '50%',
+    width: "400px",
+    maxWidth: "80%",
+    maxHeight: "50%",
   },
 }));
 
-export function About() {
+export function About(): ReactElement {
   const { classes, theme } = useStyles();
-  const features = data.map((feature, index) => (
-    <Feature {...feature} key={index} />
+  const features = data.map(({ icon, title, description, id },) => (
+    <Feature
+      icon={icon}
+      title={title}
+      description={description}
+      key={id}
+    />
   ));
 
   return (
@@ -105,24 +120,22 @@ export function About() {
           p="xl"
           className={classes.title}
         >
-          Curso de pilotagem defensiva
-          {' '}
-          <TextPPV text="Pilotando Para Vida" />
+          Curso de pilotagem defensiva <TextPPV text="Pilotando Para Vida" />
         </Title>
 
         <Text align="center" size="md">
           <Highlight
             highlight={[
-              'Pilotando Para Vida',
-              'Lord Riders Moto Clube',
-              'gratuito',
-              'pilotar mais seguro',
+              "Pilotando Para Vida",
+              "Lord Riders Moto Clube",
+              "gratuito",
+              "pilotar mais seguro",
             ]}
             highlightColor="ppv"
             highlightStyles={() => ({
               fontWeight: 700,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             })}
           >
             O Pilotando Para Vida é um curso de pilotagem defensiva de
@@ -138,8 +151,8 @@ export function About() {
           cols={2}
           spacing={theme.spacing.xl * 2}
           breakpoints={[
-            { maxWidth: 980, cols: 2, spacing: 'xl' },
-            { maxWidth: 755, cols: 1, spacing: 'xl' },
+            { maxWidth: 980, cols: 2, spacing: "xl" },
+            { maxWidth: 755, cols: 1, spacing: "xl" },
           ]}
         >
           <Stack>{features}</Stack>
