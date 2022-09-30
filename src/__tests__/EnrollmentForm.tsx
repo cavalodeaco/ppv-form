@@ -17,12 +17,28 @@ const createServer = (status: number, json: Object) => {
   );
 };
 
-// solves "ResizeObserver is not defined" error when running Jest"
-// https://github.com/ZeeCoder/use-resize-observer/issues/40
 class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() {
+    /**
+     * This method is an intentionally-blank override.
+     * solves "ResizeObserver is not defined" error when running Jest"
+     * see https://github.com/ZeeCoder/use-resize-observer/issues/40
+     * */
+  }
+  unobserve() {
+    /**
+     * This method is an intentionally-blank override.
+     * solves "ResizeObserver is not defined" error when running Jest"
+     * see https://github.com/ZeeCoder/use-resize-observer/issues/40
+     * */
+  }
+  disconnect() {
+    /**
+     * This method is an intentionally-blank override.
+     * solves "ResizeObserver is not defined" error when running Jest"
+     * see https://github.com/ZeeCoder/use-resize-observer/issues/40
+     * */
+  }
 }
 window.ResizeObserver = ResizeObserver;
 
@@ -174,22 +190,21 @@ describe("Mandatory fields form submission", () => {
 
   it("handles wrong message from 201 response", async () => {
     await submitToServer(
-      createServer(201, "enrolled" ),
+      createServer(201, "enrolled"),
       /Não conseguimos fazer sua inscrição/i
     );
   });
 
   it("handles wrong message from 409 response", async () => {
     await submitToServer(
-      createServer(409, "waiting" ),
+      createServer(409, "waiting"),
       /Não conseguimos fazer sua inscrição/i
     );
   });
-
 });
 
 describe("The 'Anterior' button", () => {
-  it('moves from page 2, back to page 1', async () => {
+  it("moves from page 2, back to page 1", async () => {
     render(<EnrollmentForm />);
     await fillPage1();
     // move from page 1 to page 2
