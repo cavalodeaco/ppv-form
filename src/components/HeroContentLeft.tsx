@@ -5,30 +5,30 @@ import {
   Image,
   Box,
   Grid,
-} from "@mantine/core";
-import hero from "./img/hero.webp";
-import logo from "./img/logoppv.svg";
+} from '@mantine/core';
+import hero from './img/hero.webp';
+import logo from './img/logoppv.svg';
 
 const useStyles = createStyles((theme) => ({
   hero: {
-    position: "relative",
+    position: 'relative',
     backgroundImage: `url(${hero})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
   },
 
   container: {
-    height: "calc(min(100vh - 60px, 100vw))",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
+    height: 'calc(min(100vh - 60px, 100vw))',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
     zIndex: 1,
-    position: "relative",
+    position: 'relative',
   },
 
   image: {
-    width: "100%",
-    maxWidth: "400px",
+    width: '100%',
+    maxWidth: '400px',
   },
 }));
 

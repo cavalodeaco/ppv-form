@@ -8,15 +8,15 @@ import {
   Center,
   Box,
   Anchor,
-} from "@mantine/core";
-import "dayjs/locale/pt-br";
-import { IconTrafficCone } from "@tabler/icons";
-import EnrollmentForm from "./EnrollmentForm";
+} from '@mantine/core';
+import 'dayjs/locale/pt-br';
+import { IconTrafficCone } from '@tabler/icons';
+import EnrollmentForm from './EnrollmentForm';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     minHeight: 400,
-    boxSizing: "border-box",
+    boxSizing: 'border-box',
     backgroundImage: `linear-gradient(180deg, ${
       theme.colors[theme.primaryColor][4]
     } 0%, ${theme.colors[theme.primaryColor][6]} 100%)`,
@@ -38,16 +38,16 @@ const useStyles = createStyles((theme) => ({
 
   description: {
     color: theme.colors[theme.primaryColor][0],
-    maxWidth: "100%",
+    maxWidth: '100%',
 
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-      maxWidth: "100%",
+      maxWidth: '100%',
     },
   },
 
   anchor: {
-    color: "white",
-    textDecoration: "underline",
+    color: 'white',
+    textDecoration: 'underline',
   },
 }));
 
@@ -74,7 +74,7 @@ export default function Enrollment() {
       <SimpleGrid
         cols={2}
         spacing={50}
-        breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+        breakpoints={[{ maxWidth: 'sm', cols: 1 }]}
       >
         <Box>
           <Title className={classes.title} mb={30}>

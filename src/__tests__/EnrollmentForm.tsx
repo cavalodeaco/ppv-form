@@ -1,21 +1,21 @@
 import { render, screen } from "@testing-library/react";
-import EnrollmentForm from "../components/EnrollmentForm";
 import userEvent from "@testing-library/user-event";
 import { setupServer, SetupServerApi } from "msw/node";
 import { rest } from "msw";
+import EnrollmentForm from "../components/EnrollmentForm";
 
 // using Mock Service Worker library to declaratively mock API communication
 // https://mswjs.io/docs/getting-started/
-const createServer = (status: number, json: Object) => {
-  return setupServer(
+const createServer = (
+  status: number,
+  json: { message: string }
+): SetupServerApi =>
+  setupServer(
     rest.post(
       process.env.REACT_APP_BACKEND_ADDRESS as string,
-      (req, res, ctx) => {
-        return res(ctx.status(status), ctx.json(json));
-      }
+      (req, res, ctx) => res(ctx.status(status), ctx.json(json))
     )
   );
-};
 
 class ResizeObserver {
   observe() {
@@ -25,6 +25,7 @@ class ResizeObserver {
      * see https://github.com/ZeeCoder/use-resize-observer/issues/40
      * */
   }
+
   unobserve() {
     /**
      * This method is an intentionally-blank override.
@@ -32,6 +33,7 @@ class ResizeObserver {
      * see https://github.com/ZeeCoder/use-resize-observer/issues/40
      * */
   }
+
   disconnect() {
     /**
      * This method is an intentionally-blank override.
