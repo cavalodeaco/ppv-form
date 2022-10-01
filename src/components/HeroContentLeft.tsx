@@ -6,6 +6,7 @@ import {
   Box,
   Grid,
 } from '@mantine/core';
+import { ReactElement } from 'react';
 import hero from './img/hero.webp';
 import logo from './img/logoppv.svg';
 
@@ -32,7 +33,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function HeroContentLeft() {
+export function HeroContentLeft(): ReactElement {
   const { classes } = useStyles();
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 import {
   createStyles,
   Title,
@@ -109,7 +109,7 @@ const links = [
   },
 ];
 
-export function HeaderResponsive() {
+export function HeaderResponsive(): ReactElement {
   const [opened, { toggle, close }] = useDisclosure(false);
   const [active, setActive] = useState(links[2].link);
   const { classes, cx } = useStyles();

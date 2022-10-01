@@ -14,7 +14,7 @@ import {
 // https://tabler-icons.io/
 import { IconSchool, IconCoinOff, IconHelmet, TablerIcon } from "@tabler/icons";
 import { ReactElement } from "react";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 import TextPPV from "./TextPPV";
 import logo from "./img/brasao_lrmc.svg";
 
@@ -23,19 +23,19 @@ const data = [
     icon: IconSchool,
     title: "Instrução teórica",
     description: "2 horas de instrução teórica sobre pilotagem defensiva",
-    id: uuid(),
+    id: v4(),
   },
   {
     icon: IconHelmet,
     title: "Atividade prática",
     description: "4 horas de atividades práticas em pistas pré-estabelecidas",
-    id: uuid(),
+    id: v4(),
   },
   {
     icon: IconCoinOff,
     title: "Sem custo",
     description: "Curso gratuito oferecido por voluntários treinados",
-    id: uuid(),
+    id: v4(),
   },
 ];
 

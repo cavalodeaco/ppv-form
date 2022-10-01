@@ -1,3 +1,8 @@
+/* eslint-disable react/jsx-props-no-spreading */
+// "Prop spreading is forbidden" rule disabled for this file
+// Prop spreading used following the Mantine use-form docs usage examples
+// see https://mantine.dev/form/use-form/
+
 import {
   createStyles,
   Text,
@@ -14,58 +19,58 @@ import {
   LoadingOverlay,
   Alert,
   List,
-} from '@mantine/core';
-import 'dayjs/locale/pt-br';
+} from "@mantine/core";
+import "dayjs/locale/pt-br";
 import {
   IconUserCheck,
   IconHelmet,
   IconLicense,
   IconAlertCircle,
   IconCircleCheck,
-} from '@tabler/icons';
-import { useState } from 'react';
-import { useForm, zodResolver } from '@mantine/form';
-import { z } from 'zod';
-import { validateBr } from 'js-brasil';
-import merge from 'lodash.merge';
-import { authorization, responsibility, lgpd } from './data/terms';
-import { theme } from './theme';
+} from "@tabler/icons";
+import { ReactElement, useState } from "react";
+import { useForm, zodResolver } from "@mantine/form";
+import { z } from "zod";
+import { validateBr } from "js-brasil";
+import merge from "lodash.merge";
+import { authorization, responsibility, lgpd } from "./data/terms.js";
+import { theme } from "./theme";
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles((mantineTheme) => ({
   form: {
-    backgroundColor: theme.white,
-    padding: theme.spacing.xl,
-    borderRadius: theme.radius.md,
-    boxShadow: theme.shadows.lg,
+    backgroundColor: mantineTheme.white,
+    padding: mantineTheme.spacing.xl,
+    borderRadius: mantineTheme.radius.md,
+    boxShadow: mantineTheme.shadows.lg,
   },
 
   input: {
-    backgroundColor: theme.white,
-    borderColor: theme.colors.gray[4],
-    color: theme.black,
+    backgroundColor: mantineTheme.white,
+    borderColor: mantineTheme.colors.gray[4],
+    color: mantineTheme.black,
 
-    '&::placeholder': {
-      color: theme.colors.gray[5],
+    "&::placeholder": {
+      color: mantineTheme.colors.gray[5],
     },
   },
 
   inputLabel: {
-    color: theme.black,
+    color: mantineTheme.black,
   },
 
   control: {
-    backgroundColor: theme.colors[theme.primaryColor][6],
+    backgroundColor: mantineTheme.colors[mantineTheme.primaryColor][6],
   },
 }));
 
 const page1Schema = z.object({
   user: z.object({
-    name: z.string().min(1, { message: 'O campo nome é obrigatório' }),
+    name: z.string().min(1, { message: "O campo nome é obrigatório" }),
     phone: z.custom((phone) => validateBr.celular(phone), {
-      message: 'Informe um número de celular',
+      message: "Informe um número de celular",
     }),
     driverLicense: z.custom((cnh) => validateBr.cnh(cnh), {
-      message: 'Informe o número da sua CNH',
+      message: "Informe o número da sua CNH",
     }),
   }),
 });
@@ -76,29 +81,29 @@ const page3Schema = z.object({
   enroll: z.object({
     terms: z.object({
       authorization: z.boolean(),
-      responsibility: z.custom((responsibility) => responsibility === true, {
+      responsibility: z.custom((value) => value === true, {
         message:
-          'O aceite do termo de responsabilidade é obrigatório para a realização do curso',
+          "O aceite do termo de responsabilidade é obrigatório para a realização do curso",
       }),
-      lgpd: z.custom((lgpd) => lgpd === true, {
+      lgpd: z.custom((value) => value === true, {
         message:
-          'O consentimento do uso dos dados é necessário para a inscrição',
+          "O consentimento do uso dos dados é necessário para a inscrição",
       }),
     }),
   }),
 });
 
-export default function EnrollmentForm() {
+export default function EnrollmentForm(): ReactElement {
   const page1 = useForm({
     validate: zodResolver(page1Schema),
     initialValues: {
       user: {
-        name: '',
-        phone: '',
-        driverLicense: '',
+        name: "",
+        phone: "",
+        driverLicense: "",
       },
       enroll: {
-        city: 'curitiba',
+        city: "curitiba",
       },
     },
   });
@@ -107,14 +112,14 @@ export default function EnrollmentForm() {
     validate: zodResolver(page2Schema),
     initialValues: {
       user: {
-        email: '',
+        email: "",
       },
       enroll: {
         motorcycle: {
-          brand: '',
-          model: '',
+          brand: "",
+          model: "",
         },
-        use: '',
+        use: "",
       },
     },
   });
@@ -140,27 +145,27 @@ export default function EnrollmentForm() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(0);
 
-  const prevStep = () => setActive((current) => current - 1);
+  const prevStep = (): void => setActive((current) => current - 1);
 
-  const submitForm = async () => {
+  const submitForm = async (): Promise<void> => {
     if (!form[form.length - 1].validate().hasErrors) {
       setLoading(true);
       const data = JSON.stringify(
-        merge({}, page1.values, page2.values, page3.values),
+        merge({}, page1.values, page2.values, page3.values)
       );
       const config = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: data,
       };
       try {
         const response = await fetch(
           process.env.REACT_APP_BACKEND_ADDRESS as string,
-          config,
+          config
         );
         if (response.status === 201) {
           const { message } = await response.json();
-          if (message === 'enrolled') {
+          if (message === "enrolled") {
             setResult(1);
           } else {
             throw new Error(`Invalid response: ${message}`);
@@ -168,7 +173,7 @@ export default function EnrollmentForm() {
         }
         if (response.status === 409) {
           const { message } = await response.json();
-          if (message === 'waiting') {
+          if (message === "waiting") {
             setResult(2);
           } else {
             throw new Error(`Invalid response: ${message}`);
@@ -183,19 +188,22 @@ export default function EnrollmentForm() {
     }
   };
 
-  const nextStep = () => setActive((current) => (form[current].validate().hasErrors ? current : current + 1));
+  const nextStep = (): void =>
+    setActive((current) =>
+      form[current].validate().hasErrors ? current : current + 1
+    );
 
   return (
-    <div className={classes.form} style={{ position: 'relative' }}>
+    <div className={classes.form} style={{ position: "relative" }}>
       <LoadingOverlay visible={loading} overlayBlur={2} />
-      <MantineProvider theme={{ ...theme, colorScheme: 'light' }}>
+      <MantineProvider theme={{ ...theme, colorScheme: "light" }}>
         <Stepper active={active} radius={40}>
           <Stepper.Step
-            icon={(
+            icon={
               <ThemeIcon variant="filled" size={40} radius={40}>
                 <IconUserCheck size={25} stroke={1.5} />
               </ThemeIcon>
-            )}
+            }
           >
             <TextInput
               label="Nome completo"
@@ -206,7 +214,7 @@ export default function EnrollmentForm() {
                 label: classes.inputLabel,
               }}
               withAsterisk
-              {...page1.getInputProps('user.name')}
+              {...page1.getInputProps("user.name")}
             />
             <TextInput
               label="Celular/WhatsApp"
@@ -214,7 +222,7 @@ export default function EnrollmentForm() {
               placeholder="(99) 99999-9999"
               mt="md"
               withAsterisk
-              {...page1.getInputProps('user.phone')}
+              {...page1.getInputProps("user.phone")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -226,7 +234,7 @@ export default function EnrollmentForm() {
               placeholder="00123456789"
               mt="md"
               withAsterisk
-              {...page1.getInputProps('user.driverLicense')}
+              {...page1.getInputProps("user.driverLicense")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -236,32 +244,32 @@ export default function EnrollmentForm() {
               label="Cidade do treinamento"
               mt="md"
               withAsterisk
-              {...page1.getInputProps('enroll.city')}
+              {...page1.getInputProps("enroll.city")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
               data={[
-                { value: 'curitiba', label: 'Curitiba' },
-                { value: 'maringa', label: 'Maringá' },
-                { value: 'londrina', label: 'Londrina' },
-                { value: 'cambira', label: 'Cambira' },
+                { value: "curitiba", label: "Curitiba" },
+                { value: "maringa", label: "Maringá" },
+                { value: "londrina", label: "Londrina" },
+                { value: "cambira", label: "Cambira" },
               ]}
             />
           </Stepper.Step>
           <Stepper.Step
-            icon={(
+            icon={
               <ThemeIcon variant="filled" size={40} radius={40}>
                 <IconHelmet size={30} stroke={1.5} />
               </ThemeIcon>
-            )}
+            }
           >
             <TextInput
               label="E-mail"
               description="Informe seu e-mail se deseja receber comunicações sobre o projeto"
               placeholder="jax.teller@gmail.com"
               mt="md"
-              {...page2.getInputProps('user.email')}
+              {...page2.getInputProps("user.email")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -275,28 +283,28 @@ export default function EnrollmentForm() {
               label="Uso da motocicleta"
               defaultValue="motofretista"
               mt="md"
-              {...page2.getInputProps('enroll.use')}
+              {...page2.getInputProps("enroll.use")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
               }}
               data={[
                 {
-                  value: 'motofretista',
-                  label: 'Instrumento de trabalho (motofretista)',
+                  value: "motofretista",
+                  label: "Instrumento de trabalho (motofretista)",
                 },
                 {
-                  value: 'deslocamento',
-                  label: 'Deslocamentos casa – trabalho',
+                  value: "deslocamento",
+                  label: "Deslocamentos casa – trabalho",
                 },
-                { value: 'lazer', label: 'Somente lazer' },
+                { value: "lazer", label: "Somente lazer" },
               ]}
             />
             <TextInput
               label="Marca"
               placeholder=""
               mt="md"
-              {...page2.getInputProps('enroll.motorcycle.brand')}
+              {...page2.getInputProps("enroll.motorcycle.brand")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -306,7 +314,7 @@ export default function EnrollmentForm() {
               label="Modelo"
               placeholder=""
               mt="md"
-              {...page2.getInputProps('enroll.motorcycle.model')}
+              {...page2.getInputProps("enroll.motorcycle.model")}
               classNames={{
                 input: classes.input,
                 label: classes.inputLabel,
@@ -314,11 +322,11 @@ export default function EnrollmentForm() {
             />
           </Stepper.Step>
           <Stepper.Step
-            icon={(
+            icon={
               <ThemeIcon variant="filled" size={40} radius={40}>
                 <IconLicense size={30} stroke={1.5} />
               </ThemeIcon>
-            )}
+            }
           >
             <Checkbox.Group
               mt="md"
@@ -326,8 +334,8 @@ export default function EnrollmentForm() {
               value={[page3.values.enroll.terms.authorization.toString()]}
               onChange={(values) => {
                 page3.setFieldValue(
-                  'enroll.terms.authorization',
-                  Boolean(values[1]),
+                  "enroll.terms.authorization",
+                  Boolean(values[1])
                 );
               }}
               description={
@@ -341,11 +349,11 @@ export default function EnrollmentForm() {
               label="Termo de Responsabilidade"
               withAsterisk
               value={[page3.values.enroll.terms.responsibility.toString()]}
-              error={page3.errors['enroll.terms.responsibility']}
+              error={page3.errors["enroll.terms.responsibility"]}
               onChange={(values) => {
                 page3.setFieldValue(
-                  'enroll.terms.responsibility',
-                  Boolean(values[1]),
+                  "enroll.terms.responsibility",
+                  Boolean(values[1])
                 );
               }}
               description={
@@ -358,11 +366,11 @@ export default function EnrollmentForm() {
             <Checkbox.Group
               mt="md"
               label="Termo de Consentimento"
-              error={page3.errors['enroll.terms.lgpd']}
+              error={page3.errors["enroll.terms.lgpd"]}
               withAsterisk
               value={[page3.values.enroll.terms.lgpd.toString()]}
               onChange={(values) => {
-                page3.setFieldValue('enroll.terms.lgpd', Boolean(values[1]));
+                page3.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
               }}
               description={
                 <ScrollArea style={{ height: 60 }}>{lgpd}</ScrollArea>
@@ -387,7 +395,7 @@ export default function EnrollmentForm() {
                   color="teal.6"
                 >
                   <List
-                    icon={(
+                    icon={
                       <ThemeIcon
                         color="teal.6"
                         size={24}
@@ -396,7 +404,7 @@ export default function EnrollmentForm() {
                       >
                         <IconCircleCheck size={16} />
                       </ThemeIcon>
-                    )}
+                    }
                   >
                     <List.Item>Você está na fila de espera!</List.Item>
                     <List.Item>
@@ -414,7 +422,7 @@ export default function EnrollmentForm() {
                   color="yellow.6"
                 >
                   <List
-                    icon={(
+                    icon={
                       <ThemeIcon
                         color="yellow.6"
                         size={24}
@@ -423,7 +431,7 @@ export default function EnrollmentForm() {
                       >
                         <IconAlertCircle size={16} />
                       </ThemeIcon>
-                    )}
+                    }
                   >
                     <List.Item>Você está na fila de espera!</List.Item>
                     <List.Item>
