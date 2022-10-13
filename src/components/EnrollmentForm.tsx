@@ -163,28 +163,23 @@ export default function EnrollmentForm(): ReactElement {
           process.env.REACT_APP_BACKEND_ADDRESS as string,
           config
         );
-        if (response.status === 201) {
-          const { message } = await response.json();
-          if (message === "enrolled") {
-            setResult(1);
-          } else {
-            throw new Error(`Invalid response: ${message}`);
-          }
-        }
-        if (response.status === 409) {
-          const { message } = await response.json();
-          if (message === "waiting") {
-            setResult(2);
-          } else {
-            throw new Error(`Invalid response: ${message}`);
-          }
+        const { message } = await response.json();
+        if (response.status === 201 && message === "enrolled") {
+          setResult(1);
+        } else if (response.status === 409 && message === "waiting") {
+          setResult(2);
+        } else {
+          // invalid response
+          setResult(0);
         }
       } catch (error) {
-        console.error(error);
+        // failed to fetch or parse json
         setResult(0);
+      } finally {
+        // no matter what, stop loading and show next page
+        setLoading(false);
+        setActive((current) => current + 1);
       }
-      setLoading(false);
-      setActive((current) => current + 1);
     }
   };
 
