@@ -1,11 +1,13 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import App from "../components/App";
+import { render, screen, within } from '@testing-library/react';
+import App from '../components/App';
 
-describe("The App component", () => {
-  test("renders header text", () => {
+describe('The App component', () => {
+  it('renders PPV logo', () => {
     render(<App />);
-    const headerText = screen.getByRole('heading', { name: /pilotando para vida/i })
-    expect(headerText).toBeInTheDocument();
+    const main = screen.getByRole('main');
+    const logo = within(main).getByRole('img', {
+      name: /pilotando para vida/i,
+    });
+    expect(logo).toBeInTheDocument();
   });
 });

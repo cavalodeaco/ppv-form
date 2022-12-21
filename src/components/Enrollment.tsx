@@ -11,7 +11,8 @@ import {
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
 import { IconTrafficCone } from "@tabler/icons";
-import EnrollmentForm from "./EnrollmentForm";
+import { ReactElement } from "react";
+import EnrollmentForm from "./form/EnrollmentForm";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -51,7 +52,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function Warning({ text }: { text: string }) {
+function Warning({ text }: { text: string }): ReactElement {
   const { classes } = useStyles();
   return (
     <Text className={classes.description} mt="sm" mb={30}>
@@ -66,7 +67,7 @@ function Warning({ text }: { text: string }) {
   );
 }
 
-export default function Enrollment() {
+export default function Enrollment(): ReactElement {
   const { classes } = useStyles();
 
   return (
