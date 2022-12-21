@@ -12,8 +12,10 @@ import {
   Image,
   Box,
 } from "@mantine/core";
-import { IconSchool, IconCoinOff, IconHelmet, TablerIcon } from "@tabler/icons";
 // https://tabler-icons.io/
+import { IconSchool, IconCoinOff, IconHelmet, TablerIcon } from "@tabler/icons";
+import { ReactElement } from "react";
+import { v4 } from "uuid";
 import TextPPV from "./TextPPV";
 import logo from "./img/brasao_lrmc.svg";
 
@@ -22,16 +24,19 @@ const data = [
     icon: IconSchool,
     title: "Instrução teórica",
     description: "2 horas de instrução teórica sobre pilotagem defensiva",
+    id: v4(),
   },
   {
     icon: IconHelmet,
     title: "Atividade prática",
     description: "4 horas de atividades práticas em pistas pré-estabelecidas",
+    id: v4(),
   },
   {
     icon: IconCoinOff,
     title: "Sem custo",
     description: "Curso gratuito oferecido por voluntários treinados",
+    id: v4(),
   },
 ];
 
@@ -41,7 +46,11 @@ interface FeatureProps {
   description: React.ReactNode;
 }
 
-export function Feature({ icon: Icon, title, description }: FeatureProps) {
+export function Feature({
+  icon: Icon,
+  title,
+  description,
+}: FeatureProps): ReactElement {
   const theme = useMantineTheme();
   return (
     <div>
@@ -90,10 +99,15 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function About() {
+export function About(): ReactElement {
   const { classes, theme } = useStyles();
-  const features = data.map((feature, index) => (
-    <Feature {...feature} key={index} />
+  const features = data.map(({ icon, title, description, id },) => (
+    <Feature
+      icon={icon}
+      title={title}
+      description={description}
+      key={id}
+    />
   ));
 
   return (
@@ -104,13 +118,13 @@ export function About() {
           align="center"
           transform="uppercase"
           italic
-          p={"xl"}
+          p="xl"
           className={classes.title}
         >
-          Curso de pilotagem defensiva <TextPPV text={"Pilotando Para Vida"} />
+          Curso de pilotagem defensiva <TextPPV text="Pilotando Para Vida" />
         </Title>
 
-        <Text align="center" size={"md"}>
+        <Text align="center" size="md">
           <Highlight
             highlight={[
               "Pilotando Para Vida",
