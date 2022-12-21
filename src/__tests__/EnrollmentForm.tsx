@@ -1,48 +1,54 @@
 import { render, screen } from "@testing-library/react";
-import EnrollmentForm from "../components/EnrollmentForm";
 import userEvent from "@testing-library/user-event";
 import { setupServer, SetupServerApi } from "msw/node";
 import { rest } from "msw";
+import EnrollmentForm from "../components/form/EnrollmentForm";
 
 // using Mock Service Worker library to declaratively mock API communication
 // https://mswjs.io/docs/getting-started/
-const createServer = (status: number, json: Object) => {
-  return setupServer(
+const createServer = (
+  status: number,
+  json: { message: string } | string,
+): SetupServerApi =>
+  setupServer(
     rest.post(
       process.env.REACT_APP_BACKEND_ADDRESS as string,
-      (req, res, ctx) => {
-        return res(ctx.status(status), ctx.json(json));
-      }
+      (req, res, ctx) => res(ctx.status(status), ctx.json(json))
     )
   );
-};
 
-class ResizeObserver {
-  observe() {
+class ResizeObserverMock {
+  // https://eslint.org/docs/latest/rules/class-methods-use-this
+  // eslint-disable-next-line class-methods-use-this
+  disconnect(): void {
     /**
      * This method is an intentionally-blank override.
-     * solves "ResizeObserver is not defined" error when running Jest"
+     * It resolves "ResizeObserver is not defined" error when running Jest
      * see https://github.com/ZeeCoder/use-resize-observer/issues/40
      * */
   }
-  unobserve() {
+
+  // eslint-disable-next-line class-methods-use-this
+  observe(): void {
     /**
      * This method is an intentionally-blank override.
-     * solves "ResizeObserver is not defined" error when running Jest"
+     * It resolves "ResizeObserver is not defined" error when running Jest
      * see https://github.com/ZeeCoder/use-resize-observer/issues/40
      * */
   }
-  disconnect() {
+
+  // eslint-disable-next-line class-methods-use-this
+  unobserve(): void {
     /**
      * This method is an intentionally-blank override.
-     * solves "ResizeObserver is not defined" error when running Jest"
+     * It resolves "ResizeObserver is not defined" error when running Jest
      * see https://github.com/ZeeCoder/use-resize-observer/issues/40
      * */
   }
 }
-window.ResizeObserver = ResizeObserver;
+window.ResizeObserver = ResizeObserverMock;
 
-const nextPage = async () => {
+const nextPage = async (): Promise<void> => {
   await userEvent.click(
     screen.getByRole("button", {
       name: /próximo/i,
@@ -50,22 +56,7 @@ const nextPage = async () => {
   );
 };
 
-const fillMandatoryAndSubmit = async () => {
-  await fillPage1(); // mandatory fields
-  await nextPage(); // page 2
-  await nextPage(); // page 3
-  const checkboxes = screen.getAllByText("Li e concordo");
-  for (const checkbox of checkboxes) {
-    await userEvent.click(checkbox);
-  }
-  await userEvent.click(
-    screen.getByRole("button", {
-      name: /enviar/i,
-    })
-  );
-};
-
-const fillPage1 = async () => {
+const fillPage1 = async (): Promise<void> => {
   await userEvent.type(
     screen.getByRole("textbox", {
       name: /nome completo/i,
@@ -86,7 +77,25 @@ const fillPage1 = async () => {
   );
 };
 
-const submitToServer = async (server: SetupServerApi, expected: RegExp) => {
+const fillMandatoryAndSubmit = async (): Promise<void> => {
+  await fillPage1(); // mandatory fields
+  await nextPage(); // page 2
+  await nextPage(); // page 3
+  const checkboxes = screen.getAllByText("Li e concordo");
+  checkboxes.forEach(async (checkbox) => {
+    await userEvent.click(checkbox);
+  });
+  await userEvent.click(
+    screen.getByRole("button", {
+      name: /enviar/i,
+    })
+  );
+};
+
+const submitToServer = async (
+  server: SetupServerApi,
+  expected: RegExp
+): Promise<void> => {
   server.listen();
   render(<EnrollmentForm />);
   await fillMandatoryAndSubmit();
@@ -119,9 +128,9 @@ describe("The EnrollmentForm component - page 1", () => {
     const alerts = screen.queryAllByRole("alert");
     expect(alerts.length).toBe(3);
     const alertsTexts = alerts.map((alert) => alert.innerHTML);
-    for (const message of messages) {
+    messages.forEach((message) => {
       expect(alertsTexts).toContainEqual(message);
-    }
+    });
   });
 });
 

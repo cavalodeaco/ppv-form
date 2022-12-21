@@ -1,8 +1,12 @@
 import { render, screen, within } from "@testing-library/react";
-import { HeaderResponsive } from "../components/HeaderResponsive";
 import userEvent from "@testing-library/user-event";
+import { HeaderResponsive } from "../components/HeaderResponsive";
 
-const getLinks = () => ({
+const getLinks = (): {
+  sobre: Element;
+  lrmc: Element;
+  inscrevase: Element;
+} => ({
   sobre: screen.getByRole("link", {
     name: /sobre/i,
   }),
@@ -47,12 +51,12 @@ describe("it uses dropdown for small screens", () => {
     const banner = screen.getByRole("banner");
     const button = within(banner).getByRole("button");
     await userEvent.click(button);
-    for (const name of [/sobre/i, /lrmc/i, /inscreva-se/i]) {
+    [/sobre/i, /lrmc/i, /inscreva-se/i].forEach((name) => {
       expect(
         screen.getAllByRole("link", {
-          name: name,
+          name,
         })
       ).toHaveLength(2);
-    }
+    });
   });
 });
