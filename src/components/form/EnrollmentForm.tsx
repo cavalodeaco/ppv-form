@@ -22,19 +22,20 @@ import {
 } from "@mantine/core";
 import "dayjs/locale/pt-br";
 import {
-  IconUserCheck,
   IconHelmet,
   IconLicense,
   IconAlertCircle,
   IconCircleCheck,
+  IconUserCheck,
 } from "@tabler/icons";
 import { ReactElement, useState } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { validateBr } from "js-brasil";
 import merge from "lodash.merge";
-import { authorization, responsibility, lgpd } from "./data/terms.js";
-import { theme } from "./theme";
+import { authorization, responsibility, lgpd } from "../data/terms.js";
+import { theme } from "../theme";
+import Page1 from "./Page1";
 
 const useStyles = createStyles((mantineTheme) => ({
   form: {
@@ -200,57 +201,7 @@ export default function EnrollmentForm(): ReactElement {
               </ThemeIcon>
             }
           >
-            <TextInput
-              label="Nome completo"
-              placeholder="Jackson Teller"
-              mt="md"
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-              withAsterisk
-              {...page1.getInputProps("user.name")}
-            />
-            <TextInput
-              label="Celular/WhatsApp"
-              description="Informe um número de celular com DDD"
-              placeholder="(99) 99999-9999"
-              mt="md"
-              withAsterisk
-              {...page1.getInputProps("user.phone")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-            <TextInput
-              label="Número da CNH"
-              description="É necessário ter habilitação categoria A para realizar o curso"
-              placeholder="00123456789"
-              mt="md"
-              withAsterisk
-              {...page1.getInputProps("user.driverLicense")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-            <Select
-              label="Cidade do treinamento"
-              mt="md"
-              withAsterisk
-              {...page1.getInputProps("enroll.city")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-              data={[
-                { value: "curitiba", label: "Curitiba" },
-                { value: "maringa", label: "Maringá" },
-                { value: "londrina", label: "Londrina" },
-                { value: "cambira", label: "Cambira" },
-              ]}
-            />
+            <Page1 page1={page1} useStyles={useStyles} />
           </Stepper.Step>
           <Stepper.Step
             icon={

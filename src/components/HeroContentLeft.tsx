@@ -10,7 +10,7 @@ import { ReactElement } from 'react';
 import hero from './img/hero.webp';
 import logo from './img/logoppv.svg';
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles(() => ({
   hero: {
     position: 'relative',
     backgroundImage: `url(${hero})`,

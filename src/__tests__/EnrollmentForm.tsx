@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setupServer, SetupServerApi } from "msw/node";
 import { rest } from "msw";
-import EnrollmentForm from "../components/EnrollmentForm";
+import EnrollmentForm from "../components/form/EnrollmentForm";
 
 // using Mock Service Worker library to declaratively mock API communication
 // https://mswjs.io/docs/getting-started/

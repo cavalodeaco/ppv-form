@@ -12,7 +12,7 @@ import {
 import "dayjs/locale/pt-br";
 import { IconTrafficCone } from "@tabler/icons";
 import { ReactElement } from "react";
-import EnrollmentForm from "./EnrollmentForm";
+import EnrollmentForm from "./form/EnrollmentForm";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
