@@ -5,17 +5,11 @@
 
 import {
   createStyles,
-  Text,
-  TextInput,
-  Select,
   Button,
   Group,
   ThemeIcon,
   Stepper,
   MantineProvider,
-  Checkbox,
-  ScrollArea,
-  Divider,
   LoadingOverlay,
   Alert,
   List,
@@ -33,9 +27,10 @@ import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { validateBr } from "js-brasil";
 import merge from "lodash.merge";
-import { authorization, responsibility, lgpd } from "../data/terms.js";
 import { theme } from "../theme";
 import Page1 from "./Page1";
+import Page2 from "./Page2";
+import Page3 from "./Page3";
 
 const useStyles = createStyles((mantineTheme) => ({
   form: {
@@ -210,62 +205,7 @@ export default function EnrollmentForm(): ReactElement {
               </ThemeIcon>
             }
           >
-            <TextInput
-              label="E-mail"
-              description="Informe seu e-mail se deseja receber comunicações sobre o projeto"
-              placeholder="jax.teller@gmail.com"
-              mt="md"
-              {...page2.getInputProps("user.email")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-            <Text mt="sm" color="dark">
-              Nos conte um pouco mais sobre você e sua moto:
-            </Text>
-            <Divider my="sm" />
-            <Select
-              label="Uso da motocicleta"
-              defaultValue="motofretista"
-              mt="md"
-              {...page2.getInputProps("enroll.use")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-              data={[
-                {
-                  value: "motofretista",
-                  label: "Instrumento de trabalho (motofretista)",
-                },
-                {
-                  value: "deslocamento",
-                  label: "Deslocamentos casa – trabalho",
-                },
-                { value: "lazer", label: "Somente lazer" },
-              ]}
-            />
-            <TextInput
-              label="Marca"
-              placeholder=""
-              mt="md"
-              {...page2.getInputProps("enroll.motorcycle.brand")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
-            <TextInput
-              label="Modelo"
-              placeholder=""
-              mt="md"
-              {...page2.getInputProps("enroll.motorcycle.model")}
-              classNames={{
-                input: classes.input,
-                label: classes.inputLabel,
-              }}
-            />
+            <Page2 page2={page2} useStyles={useStyles} />
           </Stepper.Step>
           <Stepper.Step
             icon={
@@ -274,56 +214,7 @@ export default function EnrollmentForm(): ReactElement {
               </ThemeIcon>
             }
           >
-            <Checkbox.Group
-              mt="md"
-              label="Termo de Autorização"
-              value={[page3.values.enroll.terms.authorization.toString()]}
-              onChange={(values) => {
-                page3.setFieldValue(
-                  "enroll.terms.authorization",
-                  Boolean(values[1])
-                );
-              }}
-              description={
-                <ScrollArea style={{ height: 60 }}>{authorization}</ScrollArea>
-              }
-            >
-              <Checkbox value="true" label="Li e concordo" />
-            </Checkbox.Group>
-            <Checkbox.Group
-              mt="md"
-              label="Termo de Responsabilidade"
-              withAsterisk
-              value={[page3.values.enroll.terms.responsibility.toString()]}
-              error={page3.errors["enroll.terms.responsibility"]}
-              onChange={(values) => {
-                page3.setFieldValue(
-                  "enroll.terms.responsibility",
-                  Boolean(values[1])
-                );
-              }}
-              description={
-                <ScrollArea style={{ height: 60 }}>{responsibility}</ScrollArea>
-              }
-            >
-              <Checkbox value="true" label="Li e concordo" />
-            </Checkbox.Group>
-
-            <Checkbox.Group
-              mt="md"
-              label="Termo de Consentimento"
-              error={page3.errors["enroll.terms.lgpd"]}
-              withAsterisk
-              value={[page3.values.enroll.terms.lgpd.toString()]}
-              onChange={(values) => {
-                page3.setFieldValue("enroll.terms.lgpd", Boolean(values[1]));
-              }}
-              description={
-                <ScrollArea style={{ height: 60 }}>{lgpd}</ScrollArea>
-              }
-            >
-              <Checkbox value="true" label="Li e concordo" />
-            </Checkbox.Group>
+            <Page3 page3={page3} />
           </Stepper.Step>
           <Stepper.Completed>
             {
