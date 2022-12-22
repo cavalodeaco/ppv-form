@@ -2,7 +2,12 @@ import { MantineThemeOverride } from '@mantine/core';
 
 export const theme: MantineThemeOverride = {
   colorScheme: 'dark', // do NOT use light!
-  defaultRadius: 0,
+  radius: {
+    xs: 0,
+    sm: 0,
+    md: 0,
+  },
+  defaultRadius: 'md',
   colors: {
     dark: [
       '#FFFFFF',
