@@ -212,6 +212,18 @@ describe("Mandatory fields form submission", () => {
       /Não conseguimos fazer sua inscrição/i
     );
   });
+
+  it("handles not json response", async () => {
+    await submitToServer(
+      setupServer(
+        rest.post(
+          process.env.REACT_APP_BACKEND_ADDRESS as string,
+          (req, res, ctx) => res(ctx.status(200), ctx.text("not json"))
+        )
+      ),
+      /Não conseguimos fazer sua inscrição/i
+    );
+  });
 });
 
 describe("The 'Anterior' button", () => {
