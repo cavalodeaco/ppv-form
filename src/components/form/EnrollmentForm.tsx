@@ -67,7 +67,7 @@ const page1Schema = z.object({
     }),
     driverLicense: z.custom((cnh) => validateBr.cnh(cnh), {
       message: "Informe o número da sua CNH",
-    }),
+    }), 
   }),
 });
 
@@ -97,6 +97,7 @@ export default function EnrollmentForm(): ReactElement {
         name: "",
         phone: "",
         driverLicense: "",
+        driverLicenseUF: "PR",
       },
       enroll: {
         city: "curitiba",

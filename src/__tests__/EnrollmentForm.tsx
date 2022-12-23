@@ -8,7 +8,7 @@ import EnrollmentForm from "../components/form/EnrollmentForm";
 // https://mswjs.io/docs/getting-started/
 const createServer = (
   status: number,
-  json: { message: string } | string,
+  json: { message: string } | string
 ): SetupServerApi =>
   setupServer(
     rest.post(
@@ -123,13 +123,15 @@ describe("The EnrollmentForm component - page 1", () => {
     const nextBtn = screen.getByRole("button", {
       name: /próximo/i,
     });
-    expect(screen.queryAllByRole("alert").length).toBe(0);
-    await userEvent.click(nextBtn);
-    const alerts = screen.queryAllByRole("alert");
-    expect(alerts.length).toBe(3);
-    const alertsTexts = alerts.map((alert) => alert.innerHTML);
+    // not in the document
     messages.forEach((message) => {
-      expect(alertsTexts).toContainEqual(message);
+      expect(screen.queryByText(message)).toBeNull();
+    });
+    // try submit form
+    await userEvent.click(nextBtn);
+    // alerts shows
+    messages.forEach((message) => {
+      expect(screen.getByText(message)).toBeInTheDocument();
     });
   });
 });
@@ -207,6 +209,18 @@ describe("Mandatory fields form submission", () => {
   it("handles wrong message from 409 response", async () => {
     await submitToServer(
       createServer(409, "waiting"),
+      /Não conseguimos fazer sua inscrição/i
+    );
+  });
+
+  it("handles not json response", async () => {
+    await submitToServer(
+      setupServer(
+        rest.post(
+          process.env.REACT_APP_BACKEND_ADDRESS as string,
+          (req, res, ctx) => res(ctx.status(200), ctx.text("not json"))
+        )
+      ),
       /Não conseguimos fazer sua inscrição/i
     );
   });

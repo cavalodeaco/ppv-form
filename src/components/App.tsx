@@ -10,7 +10,7 @@ import { theme } from './theme';
 export default function App(): ReactElement {
   return (
     <MantineProvider
-      theme={{ ...theme, radius: 0 }}
+      theme={{ ...theme }}
       withGlobalStyles
       withNormalizeCSS
     >
